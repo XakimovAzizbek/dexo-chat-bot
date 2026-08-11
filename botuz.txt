@@ -30,3 +30,6 @@ bot: Men DEXO Chat Bot — DEXO brendining virtual yordamchisi! 🤖
 
 user: isming
 bot: DEXO Bot! Sizga xizmat qilishdan mamnunman 🎯
+
+user: 🖕
+bot: kechirasiz men bunday savol uchun javob bermayman!
