@@ -77,19 +77,41 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
   </div>
 </div>
 <script>
-// ── bot.txt o'qish ──
+// ══════════════════════════════════════
+// 📄 TXT FAYLLAR RO'YXATI
+// Yangi fayl qo'shish uchun shu yerga
+// fayl nomini qo'shing, xolos!
+// ══════════════════════════════════════
+const TXT_FILES = [
+  'botuz.txt',
+  'botru.txt',
+  // 'botru.txt',
+  // 'boten.txt',
+  // 'botde.txt',
+  // istalgancha qo'shing...
+];
+// ══════════════════════════════════════
+
 let rules = [];
-fetch('botuz.txt')
-  .then(r=>r.text())
-  .then(text=>{
-    rules = parse(text);
-    const total = rules.reduce((s,r)=>s+r.replies.length,0);
-    document.getElementById('headerSub').textContent = rules.length+' qoida · '+total+' javob';
+
+Promise.allSettled(TXT_FILES.map(f=>fetch(f).then(r=>r.ok?r.text():Promise.reject(f))))
+  .then(results=>{
+    let loaded=0;
+    results.forEach((res,i)=>{
+      if(res.status==='fulfilled'){
+        const parsed=parse(res.value);
+        // bir xil keywords bo'lsa replies birlashtir
+        for(const p of parsed){
+          const ex=rules.find(r=>r.k===p.k);
+          if(ex) ex.replies.push(...p.replies);
+          else rules.push(p);
+        }
+        loaded++;
+      }
+    });
+    const total=rules.reduce((s,r)=>s+r.replies.length,0);
+    document.getElementById('headerSub').textContent=loaded+' fayl · '+rules.length+' qoida · '+total+' javob';
     addMsg("Assalomu alaykum! Savolingizni yozing 👇",'bot');
-  })
-  .catch(()=>{
-    document.getElementById('headerSub').textContent='bot.txt topilmadi!';
-    addMsg("⚠️ bot.txt fayli topilmadi.",'bot');
   });
 
 // ── Parser ──
