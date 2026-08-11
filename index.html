@@ -65,7 +65,7 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
     <div class="avatar">DX</div>
     <div class="header-info">
       <h1>DEXO CHAT BOT</h1>
-      <div class="header-sub" id="headerSub">Yuklanmoqda...</div>
+      <div class="header-sub" id="headerSub">Online</div>
     </div>
   </header>
   <div id="messages"></div>
@@ -109,8 +109,7 @@ Promise.allSettled(TXT_FILES.map(f=>fetch(f).then(r=>r.ok?r.text():Promise.rejec
         loaded++;
       }
     });
-    const total=rules.reduce((s,r)=>s+r.replies.length,0);
-    document.getElementById('headerSub').textContent=loaded+' fayl · '+rules.length+' qoida · '+total+' javob';
+    document.getElementById('headerSub').textContent='Online';
     addMsg("Assalomu alaykum! Savolingizni yozing 👇",'bot');
   });
 
@@ -278,10 +277,16 @@ function showTyping(){
   t.innerHTML='<span></span><span></span><span></span>';
   messagesEl.appendChild(t);
   messagesEl.scrollTop=messagesEl.scrollHeight;
+  const sub=document.getElementById('headerSub');
+  sub.textContent='Yozmoqda...';
+  sub.style.color='var(--accent2)';
 }
 function hideTyping(){
   const t=document.getElementById('typing');
   if(t) t.remove();
+  const sub=document.getElementById('headerSub');
+  sub.textContent='Online';
+  sub.style.color='';
 }
 
 // ── Send ──
