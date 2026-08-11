@@ -25,3 +25,59 @@ bot: Men DEXO CHAT BOT  — yordamchisiman! 😊
 DEXO kompaniyasi tomonidan yaratilganman va sizga savollarga javob berish, maslahatlar, tushuntirishlar va boshqa ko'p narsalarda yordam berish uchun shu yerdaman.
 
 Sizga qanday yordam bera olaman? 🇺🇿
+
+user: youtube nima?
+bot: YouTube – bu dunyodagi eng yirik video almashish platformasi boʻlib, u yerda foydalanuvchilar video koʻrishi, yuklashi va baham koʻrishi mumkin. 2005-yilda asos solingan, hozir Google’ga tegishli.
+
+Asosiy xususiyatlari:
+
+· Bepul kontent (reklamalar bilan) va reklamasiz Premium versiya.
+· Turli formatlar: qisqa videolar (Shorts), jonli efirlar, uzoq metrajli roliklar, filmlar.
+· Har xil mavzular: taʼlim, musiqiy kliplar, vloglar, oʻyinlar, yangiliklar va boshqalar.
+· Ijodkorlar uchun reklama orqali pul ishlash imkoniyati (monetizatsiya).
+· Shaxsiy tavsiyalar – sunʼiy intellekt sizning qiziqishingizga mos videolarni taklif qiladi.
+
+Bugungi kunda u Internetdagi 2-eng koʻp tashrif buyuriladigan sayt (Google’dan keyin) va raqamli madaniyatning markaziga aylangan.
+
+user: Youtube monetizatsiya haqida maʼlumot ber 
+bot: YouTube'da pul ishlash (monetizatsiya) asosan YouTube Hamkorlik Dasturi (YPP) orqali amalga oshadi. 2026-yil avgust oyida e'lon qilingan muhim o'zgarishlar 2027-yil 1-fevraldan kuchga kiradi .
+
+📈 Kirish talablari (2027-yildan boshlab)
+
+Yangi ijodkorlar uchun talablar sezilarli darajada oshirildi :
+
+· Uzun videolar (Long-form): Oxirgi 365 kun ichida 8000 soat tomosha vaqti va 1000 ta obunachi .
+· Shortslar (Shorts): Oxirgi 90 kun ichida 20 million marta ko‘rilish va 1000 ta obunachi .
+
+Eslatma: Avvalgi talablar 4000 soat yoki 10 million Shorts ko‘rilishi edi .
+
+🎯 Shortslar uchun yangi qoida
+
+Shortslardan daromad olishda davom etish uchun har 90 kunlik davrda kamida 10 million ko‘rilishni saqlab turish kerak . Agar bu ko‘rsatkich pasaysa, kanal YPPda qoladi va uzun videolardan daromad olishda davom etadi, lekin Shorts daromadi tiklanmaguncha to‘xtatiladi .
+
+💰 Daromad manbalari va taqsimot
+
+YPP orqali bir necha usulda daromad topish mumkin :
+
+· Reklama daromadi: Uzun videolardan tushgan daromadning 55% ijodkorga, Shortslardan esa 45% ijodkorga beriladi .
+· Premium obuna: Premium va Premium Lite obunalaridan tushgan sof daromat maxsus jamg‘armaga yig‘iladi va tomosha vaqtiga qarab taqsimlanadi .
+· Muxlislar xayriyalari: "Channel Memberships" va "Super Chat" kabi xususiyatlar .
+
+🧐 Asosiy sifat talablari
+
+YPPga qabul qilishda kanal butunlay tekshiriladi . Kontent quyidagi talablarga javob berishi shart :
+
+· Original va haqiqiy bo‘lishi (boshqalarnikidan olingan kontent sezilarli darajada o‘zgartirilgan bo‘lishi kerak) .
+· Ommaviy ishlab chiqarilgan, takroriy yoki manipulyativ bo‘lmasligi .
+
+Tekshiruvda kanalning asosiy mavzusi, eng ko‘p ko‘rilgan videolari va metama'lumotlari (sarlavha, eskiz) o‘rganiladi .
+
+🚀 Amaliy qadamlar
+
+1. Google AdSense hisobini kanalga ulash .
+2. YouTube studiyasining "Earn" (Daromad) bo‘limidan ariza topshirish .
+3. Kanal avtomatik va insoniy tekshiruvdan o‘tadi (odatda bir oy davom etadi) .
+
+Yangi talablar 2027-yil fevralidan boshlab joriy qilinadi, shuning uchun hozirdan sifatli va original kontent yaratishga e'tibor qaratish eng muhimi.
+
+user:
