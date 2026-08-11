@@ -43,6 +43,21 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 #sendBtn:hover{box-shadow:0 0 24px rgba(123,94,167,0.6)}
 #sendBtn:active{transform:scale(.88)}
 #sendBtn svg{width:17px;height:17px;fill:white;margin-left:2px}
+
+/* ── IMAGE MSG ── */
+.msg.bot.img-msg{padding:8px;max-width:88%}
+.img-wrap{position:relative;border-radius:12px;overflow:hidden;min-height:180px;background:var(--card)}
+.img-wrap img{width:100%;display:block;border-radius:12px;opacity:0;transition:opacity .5s ease}
+.img-wrap img.loaded{opacity:1}
+.img-shimmer{position:absolute;inset:0;background:linear-gradient(110deg,#111120 30%,#1e1e35 50%,#111120 70%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:12px}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.img-shimmer.hide{display:none}
+.img-spinner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
+.img-spinner svg{width:28px;height:28px;animation:spin 1s linear infinite;stroke:var(--accent2);fill:none}
+@keyframes spin{to{transform:rotate(360deg)}}
+.img-spinner p{font-size:11px;color:var(--muted)}
+.img-spinner.hide{display:none}
+.img-caption{font-size:11px;color:var(--muted);margin-top:5px;padding:0 2px}
 </style>
 </head>
 <body>
@@ -104,6 +119,79 @@ function parse(text) {
   return out;
 }
 
+// ── Rasm so'zlari ──
+const IMAGE_TRIGGERS = [
+  "chiz","chizib","yasab","yasab ber","rasm ber","rasm chiz","rasm yasa",
+  "rasm kerak","ko'rsat","draw","generate image","create image","show me",
+  "make image","paint","нарисуй","картинку","сгенерируй"
+];
+
+function isImageRequest(text) {
+  const l = text.toLowerCase();
+  return IMAGE_TRIGGERS.some(t => l.includes(t));
+}
+
+// Promptdan mavzuni ajratib olish
+function extractPrompt(text) {
+  let p = text.toLowerCase();
+  const removeWords = [
+    "iltimos","menga","please","men","bir","please","mana","va","be","ber",
+    "chiz","chizib","yasab","rasm ber","rasm chiz","rasm yasa","rasm kerak",
+    "ko'rsat","draw","generate image","create image","show me","make image",
+    "paint","нарисуй","картинку","сгенерируй","yasab ber","rasmini"
+  ];
+  removeWords.forEach(w => { p = p.replace(new RegExp(w,'g'),' '); });
+  p = p.replace(/\s+/g,' ').trim();
+  return p || text;
+}
+
+// Pollinations.ai rasm yuborish
+function sendImage(prompt) {
+  const encoded = encodeURIComponent(prompt + ', high quality, detailed, artistic');
+  const seed = Math.floor(Math.random() * 99999);
+  const url = `https://image.pollinations.ai/prompt/${encoded}?width=512&height=512&seed=${seed}&nologo=true`;
+
+  // wrapper message
+  const wrap = document.createElement('div');
+  wrap.className = 'msg bot img-msg';
+  wrap.style.animation = 'fadeUp .2s ease';
+
+  wrap.innerHTML = `
+    <div class="img-wrap">
+      <div class="img-shimmer" id="shimmer_${seed}"></div>
+      <div class="img-spinner" id="spinner_${seed}">
+        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity=".25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
+        <p>Rasm yaratilmoqda...</p>
+      </div>
+      <img id="img_${seed}" src="${url}" alt="${prompt}" />
+    </div>
+    <div class="img-caption">🎨 ${prompt}</div>
+  `;
+
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  const img = document.getElementById('img_'+seed);
+  const shimmer = document.getElementById('shimmer_'+seed);
+  const spinner = document.getElementById('spinner_'+seed);
+
+  img.onload = () => {
+    img.classList.add('loaded');
+    shimmer.classList.add('hide');
+    spinner.classList.add('hide');
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  };
+  img.onerror = () => {
+    shimmer.classList.add('hide');
+    spinner.classList.add('hide');
+    img.style.display = 'none';
+    const err = document.createElement('p');
+    err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
+    err.textContent = '⚠️ Rasm yuklanmadi. Qayta urinib ko\'ring.';
+    img.parentNode.appendChild(err);
+  };
+}
+
 // ── Reply ──
 const defaults = [
   "Bu savolga javobim yo'q 🤔",
@@ -146,11 +234,23 @@ function send() {
   if (!text) return;
   inputEl.value = '';
   addMsg(text, 'user');
-  showTyping();
-  setTimeout(()=>{
-    hideTyping();
-    addMsg(getReply(text), 'bot');
-  }, 500 + Math.random()*400);
+
+  if (isImageRequest(text)) {
+    // rasm so'raldi
+    const prompt = extractPrompt(text);
+    showTyping();
+    setTimeout(() => {
+      hideTyping();
+      addMsg("Rasm yaratilmoqda, biroz kuting... 🎨", 'bot');
+      sendImage(prompt);
+    }, 600);
+  } else {
+    showTyping();
+    setTimeout(()=>{
+      hideTyping();
+      addMsg(getReply(text), 'bot');
+    }, 500 + Math.random()*400);
+  }
 }
 sendBtnEl.addEventListener('click', send);
 inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
