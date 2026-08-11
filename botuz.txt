@@ -18,3 +18,10 @@ O'zingizchi? Ishlar qanday, tinchmi yoki qandaydir shovqin bormi? Agar gaplashmo
 
 user: ha
 bot: Ha! 👋 Nima gaplar? Bugun sizga qanday yordam bera olaman?
+
+user: sen kimsan? , sen kimsan
+bot: Men DEXO CHAT BOT  — yordamchisiman! 😊
+
+DEXO kompaniyasi tomonidan yaratilganman va sizga savollarga javob berish, maslahatlar, tushuntirishlar va boshqa ko'p narsalarda yordam berish uchun shu yerdaman.
+
+Sizga qanday yordam bera olaman? 🇺🇿
