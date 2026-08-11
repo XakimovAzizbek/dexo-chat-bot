@@ -44,19 +44,18 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 #sendBtn:active{transform:scale(.88)}
 #sendBtn svg{width:17px;height:17px;fill:white;margin-left:2px}
 
-/* ── IMAGE MSG ── */
-.msg.bot.img-msg{padding:8px;max-width:88%}
+/* ── IMAGE ── */
+.msg.bot.img-msg{padding:8px;max-width:90%}
 .img-wrap{position:relative;border-radius:12px;overflow:hidden;min-height:180px;background:var(--card)}
 .img-wrap img{width:100%;display:block;border-radius:12px;opacity:0;transition:opacity .5s ease}
 .img-wrap img.loaded{opacity:1}
-.img-shimmer{position:absolute;inset:0;background:linear-gradient(110deg,#111120 30%,#1e1e35 50%,#111120 70%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:12px}
+.img-shimmer{position:absolute;inset:0;background:linear-gradient(110deg,#111120 30%,#1e1e38 50%,#111120 70%);background-size:200% 100%;animation:shimmer 1.4s infinite;border-radius:12px}
 @keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-.img-shimmer.hide{display:none}
+.img-shimmer.hide,.img-spinner.hide{display:none}
 .img-spinner{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px}
-.img-spinner svg{width:28px;height:28px;animation:spin 1s linear infinite;stroke:var(--accent2);fill:none}
+.img-spinner svg{width:30px;height:30px;animation:spin 1s linear infinite;stroke:var(--accent2);fill:none}
 @keyframes spin{to{transform:rotate(360deg)}}
 .img-spinner p{font-size:11px;color:var(--muted)}
-.img-spinner.hide{display:none}
 .img-caption{font-size:11px;color:var(--muted);margin-top:5px;padding:0 2px}
 </style>
 </head>
@@ -78,182 +77,216 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
   </div>
 </div>
 <script>
-// ── bot.txt ni o'qish ──
-// index.html va bot.txt bir joyda bo'lishi kerak
+// ── bot.txt o'qish ──
 let rules = [];
-
 fetch('bot.txt')
-  .then(r => r.text())
-  .then(text => {
+  .then(r=>r.text())
+  .then(text=>{
     rules = parse(text);
     const total = rules.reduce((s,r)=>s+r.replies.length,0);
-    document.getElementById('headerSub').textContent =
-      rules.length + ' qoida · ' + total + ' javob';
-    addMsg("Assalomu alaykum! Savolingizni yozing 👇", 'bot');
+    document.getElementById('headerSub').textContent = rules.length+' qoida · '+total+' javob';
+    addMsg("Assalomu alaykum! Savolingizni yozing 👇",'bot');
   })
-  .catch(() => {
-    document.getElementById('headerSub').textContent = 'bot.txt topilmadi!';
-    addMsg("⚠️ bot.txt fayli topilmadi. Iltimos index.html yoniga qo'ying.", 'bot');
+  .catch(()=>{
+    document.getElementById('headerSub').textContent='bot.txt topilmadi!';
+    addMsg("⚠️ bot.txt fayli topilmadi.",'bot');
   });
 
 // ── Parser ──
-function parse(text) {
-  const lines = text.split('\n');
-  const out = [];
-  let keys = null;
-  for (const raw of lines) {
-    const line = raw.trim();
-    if (!line || line.startsWith('#')) continue;
-    if (/^user:/i.test(line)) {
-      keys = line.slice(5).trim().split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
-    } else if (/^bot:/i.test(line) && keys) {
-      const reply = line.slice(4).trim();
-      if (!reply) { keys = null; continue; }
-      const k = keys.slice().sort().join('|');
-      const ex = out.find(r=>r.k===k);
-      if (ex) ex.replies.push(reply);
-      else out.push({k, keywords:[...keys], replies:[reply]});
-      keys = null;
+function parse(text){
+  const lines=text.split('\n'), out=[];
+  let keys=null;
+  for(const raw of lines){
+    const line=raw.trim();
+    if(!line||line.startsWith('#')) continue;
+    if(/^user:/i.test(line)){
+      keys=line.slice(5).trim().split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+    } else if(/^bot:/i.test(line)&&keys){
+      const reply=line.slice(4).trim();
+      if(!reply){keys=null;continue;}
+      const k=keys.slice().sort().join('|');
+      const ex=out.find(r=>r.k===k);
+      if(ex) ex.replies.push(reply);
+      else out.push({k,keywords:[...keys],replies:[reply]});
+      keys=null;
     }
   }
   return out;
 }
 
-// ── Rasm so'zlari ──
-const IMAGE_TRIGGERS = [
-  "chiz","chizib","yasab","yasab ber","rasm ber","rasm chiz","rasm yasa",
-  "rasm kerak","ko'rsat","draw","generate image","create image","show me",
-  "make image","paint","нарисуй","картинку","сгенерируй"
+// ── Rasm trigger so'zlari (ko'p tilda) ──
+const IMG_TRIGGERS=[
+  // O'zbek
+  "chiz","chizib","yasab","rasm ber","rasm chiz","rasm yasa","rasm kerak","ko'rsat","tasvirla","rasmini ber",
+  // Ingliz
+  "draw","generate image","create image","show me","make image","paint","sketch","illustrate","image of","picture of",
+  // Rus
+  "нарисуй","картинку","сгенерируй","нарисовать","покажи","изображение","рисунок",
+  // Arab
+  "ارسم","صورة","أرسم","رسم",
+  // Nemis
+  "zeichne","bild erstellen","zeig mir","male",
+  // Fransuz
+  "dessine","génère","montre moi","image de",
+  // Qirg'iz
+  "сүрөт тарт","тарт","сүрөт чий",
+  // Tojik
+  "расм кашида","тасвир",
+  // Turk
+  "çiz","resim yap","resim çiz","çiziver",
+  // Ispan
+  "dibuja","genera imagen","muéstrame",
+  // Italyan
+  "disegna","genera immagine",
+  // Xitoy
+  "画","生成图片","画一张",
+  // Yapon
+  "描いて","画像を","絵を描いて",
+  // Koreya
+  "그려","이미지","그림 그려"
 ];
 
-function isImageRequest(text) {
-  const l = text.toLowerCase();
-  return IMAGE_TRIGGERS.some(t => l.includes(t));
+function isImageRequest(text){
+  const l=text.toLowerCase();
+  return IMG_TRIGGERS.some(t=>l.includes(t));
 }
 
-// Promptdan mavzuni ajratib olish
-function extractPrompt(text) {
-  let p = text.toLowerCase();
-  const removeWords = [
-    "iltimos","menga","please","men","bir","please","mana","va","be","ber",
-    "chiz","chizib","yasab","rasm ber","rasm chiz","rasm yasa","rasm kerak",
-    "ko'rsat","draw","generate image","create image","show me","make image",
-    "paint","нарисуй","картинку","сгенерируй","yasab ber","rasmini"
-  ];
-  removeWords.forEach(w => { p = p.replace(new RegExp(w,'g'),' '); });
-  p = p.replace(/\s+/g,' ').trim();
-  return p || text;
+// ── Claude API: har qanday tilda yozilgan so'rovni inglizcha image prompt ga aylantirish ──
+async function getImagePrompt(userText){
+  try{
+    const res=await fetch("https://api.anthropic.com/v1/messages",{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({
+        model:"claude-sonnet-4-6",
+        max_tokens:60,
+        messages:[{
+          role:"user",
+          content:`User wants an image. Their message (any language): "${userText}"
+
+Reply with ONLY a short English image generation prompt, 5-12 words max.
+Be specific and descriptive. No explanation, no punctuation at end.
+Examples:
+"Ronaldo rasm chiz" → Cristiano Ronaldo football player realistic portrait photo
+"нарисуй кошку" → cute fluffy cat sitting realistic photo
+"ارسم جبل" → majestic snow mountain landscape dramatic lighting
+"gul chiz" → beautiful red rose flower close up
+"mushuk yasab ber" → adorable orange cat playing realistic
+"arslonni ko'rsat" → powerful lion portrait golden mane realistic`
+        }]
+      })
+    });
+    const data=await res.json();
+    return data.content?.[0]?.text?.trim()||userText;
+  } catch(e){
+    return userText;
+  }
 }
 
-// Pollinations.ai rasm yuborish
-function sendImage(prompt) {
-  const encoded = encodeURIComponent(prompt + ', high quality, detailed, artistic');
-  const seed = Math.floor(Math.random() * 99999);
-  const url = `https://image.pollinations.ai/prompt/${encoded}?width=512&height=512&seed=${seed}&nologo=true`;
+// ── Pollinations.ai rasm yaratish ──
+function renderImage(prompt, originalText){
+  const seed=Math.floor(Math.random()*99999);
+  const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt+', high quality, detailed, sharp, 4k')}?width=512&height=512&seed=${seed}&nologo=true`;
 
-  // wrapper message
-  const wrap = document.createElement('div');
-  wrap.className = 'msg bot img-msg';
-  wrap.style.animation = 'fadeUp .2s ease';
-
-  wrap.innerHTML = `
+  const wrap=document.createElement('div');
+  wrap.className='msg bot img-msg';
+  wrap.innerHTML=`
     <div class="img-wrap">
-      <div class="img-shimmer" id="shimmer_${seed}"></div>
-      <div class="img-spinner" id="spinner_${seed}">
-        <svg viewBox="0 0 24 24" stroke-width="2"><circle cx="12" cy="12" r="10" stroke-opacity=".25"/><path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/></svg>
+      <div class="img-shimmer" id="sh${seed}"></div>
+      <div class="img-spinner" id="sp${seed}">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <circle cx="12" cy="12" r="10" stroke-opacity=".2"/>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+        </svg>
         <p>Rasm yaratilmoqda...</p>
       </div>
-      <img id="img_${seed}" src="${url}" alt="${prompt}" />
+      <img id="im${seed}" src="${url}" alt="${prompt}"/>
     </div>
-    <div class="img-caption">🎨 ${prompt}</div>
+    <div class="img-caption">🎨 ${originalText}</div>
   `;
-
   messagesEl.appendChild(wrap);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  messagesEl.scrollTop=messagesEl.scrollHeight;
 
-  const img = document.getElementById('img_'+seed);
-  const shimmer = document.getElementById('shimmer_'+seed);
-  const spinner = document.getElementById('spinner_'+seed);
+  const img=document.getElementById('im'+seed);
+  const sh=document.getElementById('sh'+seed);
+  const sp=document.getElementById('sp'+seed);
 
-  img.onload = () => {
+  img.onload=()=>{
     img.classList.add('loaded');
-    shimmer.classList.add('hide');
-    spinner.classList.add('hide');
-    messagesEl.scrollTop = messagesEl.scrollHeight;
+    sh.classList.add('hide');
+    sp.classList.add('hide');
+    messagesEl.scrollTop=messagesEl.scrollHeight;
   };
-  img.onerror = () => {
-    shimmer.classList.add('hide');
-    spinner.classList.add('hide');
-    img.style.display = 'none';
-    const err = document.createElement('p');
-    err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
-    err.textContent = '⚠️ Rasm yuklanmadi. Qayta urinib ko\'ring.';
+  img.onerror=()=>{
+    sh.classList.add('hide');
+    sp.classList.add('hide');
+    img.style.display='none';
+    const err=document.createElement('p');
+    err.style.cssText='color:var(--muted);font-size:13px;padding:16px;text-align:center';
+    err.textContent="⚠️ Rasm yuklanmadi. Qayta urinib ko'ring.";
     img.parentNode.appendChild(err);
   };
 }
 
 // ── Reply ──
-const defaults = [
-  "Bu savolga javobim yo'q 🤔",
-  "Tushunmadim, boshqacha so'rasangiz? 🙏",
-  "Bu mavzu bo'yicha ma'lumotim yo'q 😅",
-];
-function getReply(text) {
-  const lower = text.toLowerCase();
-  const hits = rules.filter(r=>r.keywords.some(k=>lower.includes(k)));
-  if (!hits.length) return defaults[Math.floor(Math.random()*defaults.length)];
-  const rule = hits[Math.floor(Math.random()*hits.length)];
+const defaults=["Bu savolga javobim yo'q 🤔","Tushunmadim, boshqacha so'rasangiz? 🙏","Bu mavzu bo'yicha ma'lumotim yo'q 😅"];
+function getReply(text){
+  const lower=text.toLowerCase();
+  const hits=rules.filter(r=>r.keywords.some(k=>lower.includes(k)));
+  if(!hits.length) return defaults[Math.floor(Math.random()*defaults.length)];
+  const rule=hits[Math.floor(Math.random()*hits.length)];
   return rule.replies[Math.floor(Math.random()*rule.replies.length)];
 }
 
 // ── UI ──
-const messagesEl = document.getElementById('messages');
-const inputEl    = document.getElementById('userInput');
-const sendBtnEl  = document.getElementById('sendBtn');
+const messagesEl=document.getElementById('messages');
+const inputEl=document.getElementById('userInput');
+const sendBtnEl=document.getElementById('sendBtn');
 
-function addMsg(text, role) {
-  const d = document.createElement('div');
-  d.className = 'msg ' + role;
-  d.textContent = text;
+function addMsg(text,role){
+  const d=document.createElement('div');
+  d.className='msg '+role;
+  d.textContent=text;
   messagesEl.appendChild(d);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  messagesEl.scrollTop=messagesEl.scrollHeight;
 }
-function showTyping() {
-  const t = document.createElement('div');
-  t.className = 'typing'; t.id = 'typing';
-  t.innerHTML = '<span></span><span></span><span></span>';
+function showTyping(){
+  const t=document.createElement('div');
+  t.className='typing';t.id='typing';
+  t.innerHTML='<span></span><span></span><span></span>';
   messagesEl.appendChild(t);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
+  messagesEl.scrollTop=messagesEl.scrollHeight;
 }
-function hideTyping() {
-  const t = document.getElementById('typing');
-  if (t) t.remove();
+function hideTyping(){
+  const t=document.getElementById('typing');
+  if(t) t.remove();
 }
-function send() {
-  const text = inputEl.value.trim();
-  if (!text) return;
-  inputEl.value = '';
-  addMsg(text, 'user');
 
-  if (isImageRequest(text)) {
-    // rasm so'raldi
-    const prompt = extractPrompt(text);
+// ── Send ──
+async function send(){
+  const text=inputEl.value.trim();
+  if(!text) return;
+  inputEl.value='';
+  addMsg(text,'user');
+
+  if(isImageRequest(text)){
     showTyping();
-    setTimeout(() => {
-      hideTyping();
-      addMsg("Rasm yaratilmoqda, biroz kuting... 🎨", 'bot');
-      sendImage(prompt);
-    }, 600);
+    // Claude API orqali inglizcha prompt olish
+    const prompt=await getImagePrompt(text);
+    hideTyping();
+    addMsg("Rasm yaratilmoqda... 🎨",'bot');
+    renderImage(prompt, text);
   } else {
     showTyping();
     setTimeout(()=>{
       hideTyping();
-      addMsg(getReply(text), 'bot');
-    }, 500 + Math.random()*400);
+      addMsg(getReply(text),'bot');
+    },500+Math.random()*400);
   }
 }
-sendBtnEl.addEventListener('click', send);
-inputEl.addEventListener('keydown', e=>{ if(e.key==='Enter') send(); });
+
+sendBtnEl.addEventListener('click',send);
+inputEl.addEventListener('keydown',e=>{if(e.key==='Enter') send();});
 </script>
 </body>
 </html>
