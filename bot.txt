@@ -1,0 +1,32 @@
+# DEXO CHAT BOT — Savol va Javoblar
+# Format: user: [kalit so'zlar] | bot: [javob]
+# Kalit so'zlar vergul bilan ajratiladi
+# Izoh qatorlari # bilan boshlanadi
+# Bo'sh qator — qatorlarni ajratish uchun
+
+user: salom, assalomu
+bot: Assalomu alaykum! DEXO Chat Bot xizmatingizda 😊
+
+user: salom
+bot: Salom! Bugun sizga qanday yordam bera olaman? ✨
+
+user: salom
+bot: Hey! Xush kelibsiz DEXO Chat Botga 🚀
+
+user: xayr
+bot: Xayr! Yaxshi kun tilayman 👋
+
+user: rahmat
+bot: Arzimaydi! Yana murojaat qiling 🙏
+
+user: rahmat
+bot: Xursand bo'ldim yordam bera olganim uchun! 😊
+
+user: qanday, yaxshimisiz
+bot: Yaxshi, rahmat! Siz-chi? 😄
+
+user: isming
+bot: Men DEXO Chat Bot — DEXO brendining virtual yordamchisi! 🤖
+
+user: isming
+bot: DEXO Bot! Sizga xizmat qilishdan mamnunman 🎯
