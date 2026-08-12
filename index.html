@@ -187,7 +187,7 @@ function isImageRequest(text){
   return IMG_TRIGGERS.some(t=>l.includes(t));
 }
 
-// ── Claude API: har qanday tilda yozilgan so'rovni inglizcha image prompt ga aylantirish ──
+// ── Claude API: prompt tarjimon ──
 async function getImagePrompt(userText){
   try{
     const res=await fetch("https://api.anthropic.com/v1/messages",{
@@ -195,20 +195,31 @@ async function getImagePrompt(userText){
       headers:{"Content-Type":"application/json"},
       body:JSON.stringify({
         model:"claude-sonnet-4-6",
-        max_tokens:60,
+        max_tokens:120,
         messages:[{
           role:"user",
-          content:`User wants an image. Their message (any language): "${userText}"
+          content:`You are an expert AI image prompt engineer. The user wants an image generated.
 
-Reply with ONLY a short English image generation prompt, 5-12 words max.
-Be specific and descriptive. No explanation, no punctuation at end.
+User message (any language): "${userText}"
+
+Your job:
+1. Understand what subject/scene the user wants
+2. Write a detailed, specific English prompt for Pollinations.ai image generator
+3. For real people (celebrities, athletes, etc): include full name + profession + "realistic photo portrait"
+4. For animals: include breed/type + color + mood + "realistic photo"
+5. For places/nature: include location details + lighting + atmosphere
+6. For objects/food: include details + style + lighting
+7. Always add: "highly detailed, sharp focus, professional photography, 8k"
+8. NEVER add artistic/painting style unless user asks to draw/paint
+
+Reply with ONLY the English prompt, nothing else, no explanation.
+
 Examples:
-"Ronaldo rasm chiz" → Cristiano Ronaldo football player realistic portrait photo
-"нарисуй кошку" → cute fluffy cat sitting realistic photo
-"ارسم جبل" → majestic snow mountain landscape dramatic lighting
-"gul chiz" → beautiful red rose flower close up
-"mushuk yasab ber" → adorable orange cat playing realistic
-"arslonni ko'rsat" → powerful lion portrait golden mane realistic`
+"Ronaldo rasm chiz" → Cristiano Ronaldo Portuguese football player CR7 Real Madrid, realistic portrait photo, highly detailed, sharp focus, professional photography, 8k
+"mushuk" → cute orange tabby cat sitting, green eyes, soft fur, realistic photo, highly detailed, sharp focus, 8k
+"tog manzarasi" → majestic snow-capped mountain landscape at golden hour, dramatic clouds, realistic photo, highly detailed, 8k
+"pizza" → delicious pepperoni pizza with melted cheese, food photography, studio lighting, highly detailed, 8k
+"Eiffel tower" → Eiffel Tower Paris France at night with lights, realistic photo, highly detailed, sharp focus, 8k`
         }]
       })
     });
@@ -222,7 +233,7 @@ Examples:
 // ── Pollinations.ai rasm yaratish ──
 function renderImage(prompt, originalText){
   const seed=Math.floor(Math.random()*99999);
-  const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt+', high quality, detailed, sharp, 4k')}?width=512&height=512&seed=${seed}&nologo=true`;
+  const url=`https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&seed=${seed}&nologo=true&enhance=true`;
 
   const wrap=document.createElement('div');
   wrap.className='msg bot img-msg';
