@@ -80,5 +80,31 @@ Tekshiruvda kanalning asosiy mavzusi, eng ko‘p ko‘rilgan videolari va metama
 
 Yangi talablar 2027-yil fevralidan boshlab joriy qilinadi, shuning uchun hozirdan sifatli va original kontent yaratishga e'tibor qaratish eng muhimi.
 
+
 user: telegram monetizatsiya haqida maʼlumot ber
-bot: 
+bot: Telegramda pul ishlashning asosiy mexanizmi bu Telegram Stars (yulduzlar) — platformaning ichki valyutasi. Kontent yaratuvchilari bu yulduzlarni ishlab, ularni Toncoin (TON) ga almashtirib, keyin real pulga yechib olishlari mumkin.
+
+🤑 Qanday qilib daromad topish mumkin?
+
+Telegram kanal va guruh egalari uchun bir necha imkoniyatlar mavjud:
+
+· Kanal reklamasi: Kanalda ko'rsatiladigan reklamalardan tushgan daromadning 50% ini oling. Buning uchun kanalingizda 1000+ obunachi bo‘lishi shart.
+· Star Reactions (Yulduzli reaksiyalar): Obunachilar postlaringizga yulduzcha bilan reaksiya bildirib, sizga yulduz jo‘natishi mumkin. Siz bu yulduzlarning 100% ini olasiz.
+· Star Subscriptions (Yulduzli obunalar): Maxsus havola yaratib, uni faqat oylik yulduz to‘lovi evaziga kirish mumkin bo‘lgan eksklyuziv kanalga aylantiring.
+· Suggested Posts (Tavsiya etilgan postlar): Obunachilar sizning kanalingizda post joylashtirishni taklif qilishi va buning evaziga sizga yulduz yoki TON to‘lashi mumkin. Siz postni tasdiqlaganingizdan 24 soat o‘tgach mukofot olasiz.
+· Star Messages (Yulduzli xabarlar): Sizga xat yozmoqchi bo‘lgan notanish odamlardan yulduz undirib olishingiz mumkin (Premium a’zolar uchun). Bu xabarlarni to‘lash orqali spamdan himoyalanadi.
+
+Muhim eslatma: Yechib olish uchun faqat ishlab topilgan yulduzlar yaroqli. Sotib olingan yulduzlarni pulga aylantirib bo‘lmaydi. Yulduzlarni yechib olish uchun Fragment platformasidan foydalaniladi va ular ishlab topilgan paytdan boshlab 21 kun o‘tgach yechib olish mumkin.
+
+💳 Telegram Stars va ularni sotib olish
+
+· Stars nima? Bu App Store va Google Play qoidalariga moslashish uchun blokcheynda emas, balki Telegram hisobingizda saqlanadigan markaziy valyuta.
+· Qayerdan sotib olish mumkin?
+  · Ilova ichida (Google/Apple Pay): Qulay, lekin taxminan 30% komissiya tufayli qimmatroq ($0.020/star atrofida).
+  · Fragment orqali (TON kriptovalyutasi bilan): Taxminan 30% arzonroq ($0.014/star atrofida), lekin TON hamyonini talab qiladi.
+
+📈 Kriptovalyuta va reklama imkoniyatlari
+
+Telegram iqtisodiyoti TON bilan chambarchas bog‘liq. Yulduzlarni Fragment orqali TON ga almashtirib olasiz, bu esa yechib olish uchun asosiy vositadir. Agar daromadingizni kanalni reklama qilishga sarflasangiz, Telegram tomonidan 30% chegirma olasiz.
+
+Telegramning monetizatsiya tizimi, ayniqsa, ko‘plab auditoriyaga ega kanallar uchun imkoniyatlar yaratadi. Biror kanalingiz bormi yoki hozircha reja tuzayapsizmi?
