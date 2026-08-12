@@ -114,25 +114,39 @@ Promise.allSettled(TXT_FILES.map(f=>fetch(f).then(r=>r.ok?r.text():Promise.rejec
     addMsg("Assalomu alaykum! Savolingizni yozing 👇",'bot');
   });
 
-// ── Parser ──
+// ── Parser (ko'p qatorli javobni qo'llab-quvvatlaydi) ──
 function parse(text){
   const lines=text.split('\n'), out=[];
-  let keys=null;
+  let keys=null, replyLines=[], inBot=false;
+
+  function saveReply(){
+    if(!keys||!replyLines.length) return;
+    const reply=replyLines.join('\n').trimEnd();
+    if(!reply){keys=null;replyLines=[];inBot=false;return;}
+    const k=keys.slice().sort().join('|');
+    const ex=out.find(r=>r.k===k);
+    if(ex) ex.replies.push(reply);
+    else out.push({k,keywords:[...keys],replies:[reply]});
+    keys=null;replyLines=[];inBot=false;
+  }
+
   for(const raw of lines){
     const line=raw.trim();
-    if(!line||line.startsWith('#')) continue;
+    if(line.startsWith('#')) continue;
     if(/^user:/i.test(line)){
+      saveReply();
       keys=line.slice(5).trim().split(',').map(s=>s.trim().toLowerCase()).filter(Boolean);
+      inBot=false;
     } else if(/^bot:/i.test(line)&&keys){
-      const reply=line.slice(4).trim();
-      if(!reply){keys=null;continue;}
-      const k=keys.slice().sort().join('|');
-      const ex=out.find(r=>r.k===k);
-      if(ex) ex.replies.push(reply);
-      else out.push({k,keywords:[...keys],replies:[reply]});
-      keys=null;
+      replyLines=[];
+      const first=line.slice(4).trim();
+      if(first) replyLines.push(first);
+      inBot=true;
+    } else if(inBot){
+      replyLines.push(raw);
     }
   }
+  saveReply();
   return out;
 }
 

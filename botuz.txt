@@ -80,4 +80,5 @@ Tekshiruvda kanalning asosiy mavzusi, eng ko‘p ko‘rilgan videolari va metama
 
 Yangi talablar 2027-yil fevralidan boshlab joriy qilinadi, shuning uchun hozirdan sifatli va original kontent yaratishga e'tibor qaratish eng muhimi.
 
-user:
+user: telegram monetizatsiya haqida maʼlumot ber
+bot: 
