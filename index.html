@@ -80,7 +80,7 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
   </header>
   <div id="messages"></div>
   <div class="input-bar">
-    <button id="ocrBtn" title="Rasmdan matn o'qish">
+    <button id="ocrBtn" title="Rasm yuklash">
       <svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v10h2V7H6zm4 0v10h2V7h-2zm4 0v10h2V7h-2z"/></svg>
     </button>
     <input id="userInput" type="text" placeholder="Xabar yozing..." autocomplete="off"/>
@@ -104,6 +104,8 @@ const TXT_FILES = [
 
 const STORAGE_KEY = 'dexo_chat_v1';
 let rules = [];
+let chatLog = []; // 'history' emas — browser bilan to'qnashmaydi
+let pendingOcrImg = null; // yuklangan rasm kutib turadi
 
 // ── Parser ──
 function parse(text) {
@@ -139,26 +141,32 @@ function parse(text) {
   return out;
 }
 
-// ── Rasm trigger so'zlari ──
+// ── Rasm yaratish trigger so'zlari ──
 const IMG_TRIGGERS = [
   "chiz","chizib","yasab","rasm ber","rasm chiz","rasm yasa","rasm kerak","ko'rsat","tasvirla","rasmini ber",
   "draw","generate image","create image","show me","make image","paint","sketch","illustrate","image of","picture of",
   "нарисуй","картинку","сгенерируй","нарисовать","покажи","изображение","рисунок",
-  "ارسم","صورة","أرسم","رسم",
-  "zeichne","bild erstellen","zeig mir","male",
-  "dessine","génère","montre moi","image de",
-  "сүрөт тарт","тарт","сүрөт чий",
-  "расм кашида","тасвир",
-  "çiz","resim yap","resim çiz","çiziver",
-  "dibuja","genera imagen","muéstrame",
-  "disegna","genera immagine",
-  "画","生成图片","画一张",
-  "描いて","画像を","絵を描いて",
-  "그려","이미지","그림 그려"
+  "ارسم","صورة","أرسم","رسم","zeichne","bild erstellen","zeig mir","male",
+  "dessine","génère","montre moi","image de","сүрөт тарт","тарт","сүрөт чий",
+  "расм кашида","тасвир","çiz","resim yap","resim çiz","çiziver",
+  "dibuja","genera imagen","muéstrame","disegna","genera immagine",
+  "画","生成图片","画一张","描いて","画像を","絵を描いて","그려","이미지","그림 그려"
 ];
 function isImageRequest(text) {
   const l = text.toLowerCase();
   return IMG_TRIGGERS.some(t => l.includes(t));
+}
+
+// ── OCR trigger so'zlari ──
+const OCR_TRIGGERS = [
+  "matnni o'qi","matnni ko'chir","rasmdagi matn","rasmdan matn",
+  "matnni yubor","matnni menga","matnni olib","o'qib ber","ko'chirib ber",
+  "read text","extract text","copy text","text from image",
+  "прочитай текст","текст из","скопируй текст"
+];
+function isOcrRequest(text) {
+  const l = text.toLowerCase();
+  return OCR_TRIGGERS.some(t => l.includes(t));
 }
 
 // ── Claude API prompt tarjimon ──
@@ -219,7 +227,7 @@ function renderImage(prompt, originalText) {
   const sp  = document.getElementById('sp'+seed);
   img.onload = () => { img.classList.add('loaded'); sh.classList.add('hide'); sp.classList.add('hide'); messagesEl.scrollTop = messagesEl.scrollHeight; };
   img.onerror = () => {
-    sh.classList.add('hide'); sp.classList.add('hide'); img.style.display='none';
+    sh.classList.add('hide'); sp.classList.add('hide'); img.style.display = 'none';
     const err = document.createElement('p');
     err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
     err.textContent = "⚠️ Rasm yuklanmadi. Qayta urinib ko'ring.";
@@ -244,50 +252,61 @@ const sendBtnEl  = document.getElementById('sendBtn');
 const ocrBtn     = document.getElementById('ocrBtn');
 const ocrFile    = document.getElementById('ocrFileInput');
 
-// ── Xotira (localStorage) ──
-// Har xabar: { role: 'user'|'bot', text: '...' }
-// OCR preview: { role: 'ocr', src: 'data:...' }
-let history = [];
-
-function saveHistory() {
-  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+// ── Xotira ──
+function saveChatLog() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chatLog)); } catch(e) {}
 }
 
-function loadHistory() {
+function loadChatLog() {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    if (!saved) return;
+    if (!saved) return false;
     const arr = JSON.parse(saved);
-    if (!Array.isArray(arr) || !arr.length) return;
+    if (!Array.isArray(arr) || !arr.length) return false;
     arr.forEach(item => {
       if (item.role === 'ocr') {
-        addOcrPreview(item.src, false);
+        renderOcrPreview(item.src, false);
       } else {
-        addMsgDirect(item.text, item.role);
+        renderMsgDirect(item.text, item.role);
       }
     });
     messagesEl.scrollTop = messagesEl.scrollHeight;
-  } catch(e) {}
+    return true;
+  } catch(e) { return false; }
 }
 
-// ── addMsgDirect: xotirasiz, to'g'ridan qo'shish (tarix yuklashda) ──
-function addMsgDirect(text, role) {
+// ── OCR preview ──
+function renderOcrPreview(src, save) {
+  const prev = document.createElement('div');
+  prev.className = 'ocr-preview';
+  const pimg = document.createElement('img');
+  pimg.src = src;
+  prev.appendChild(pimg);
+  messagesEl.appendChild(prev);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  if (save) {
+    chatLog.push({ role: 'ocr', src });
+    saveChatLog();
+  }
+}
+
+// ── Xabar: to'g'ridan (tarix yuklashda, typewriter yo'q) ──
+function renderMsgDirect(text, role) {
   const d = document.createElement('div');
   d.className = 'msg ' + role;
   d.textContent = text;
   messagesEl.appendChild(d);
 }
 
-// ── addMsg: typewriter + xotiraga saqlash ──
+// ── Xabar: typewriter + saqlash ──
 function addMsg(text, role) {
   const d = document.createElement('div');
   d.className = 'msg ' + role;
   messagesEl.appendChild(d);
   messagesEl.scrollTop = messagesEl.scrollHeight;
 
-  // xotiraga qo'sh
-  history.push({ role, text });
-  saveHistory();
+  chatLog.push({ role, text });
+  saveChatLog();
 
   if (role === 'bot') {
     let i = 0;
@@ -309,22 +328,7 @@ function addMsg(text, role) {
   }
 }
 
-// ── OCR preview qo'shish ──
-function addOcrPreview(src, save = true) {
-  const prev = document.createElement('div');
-  prev.className = 'ocr-preview';
-  const pimg = document.createElement('img');
-  pimg.src = src;
-  prev.appendChild(pimg);
-  messagesEl.appendChild(prev);
-  messagesEl.scrollTop = messagesEl.scrollHeight;
-  if (save) {
-    history.push({ role: 'ocr', src });
-    saveHistory();
-  }
-}
-
-// ── Typing animatsiya ──
+// ── Typing ──
 let _dotTimer = null;
 function showTyping() {
   const t = document.createElement('div');
@@ -350,13 +354,43 @@ function hideTyping() {
   sub.style.color = '';
 }
 
+// ── OCR ishga tushirish ──
+async function runOcr() {
+  if (!pendingOcrImg) {
+    addMsg("Avval 🖼️ tugmasi orqali rasm yuklang!", 'bot');
+    return;
+  }
+  showTyping();
+  await new Promise(r => setTimeout(r, 600));
+  hideTyping();
+  addMsg("Rasm qabul qilindi, matnni o'qiyapman... 🔍", 'bot');
+  try {
+    showTyping();
+    const result = await Tesseract.recognize(pendingOcrImg, 'eng+rus', { logger: () => {} });
+    hideTyping();
+    const txt = result.data.text.trim();
+    pendingOcrImg = null;
+    if (txt) {
+      addMsg("📄 Rasmdagi matn:\n\n" + txt, 'bot');
+    } else {
+      addMsg("Rasmdan matn topilmadi. Sifatliroq rasm yuklang 🙏", 'bot');
+    }
+  } catch(err) {
+    hideTyping();
+    addMsg("Xatolik yuz berdi. Qayta urinib ko'ring ⚠️", 'bot');
+  }
+}
+
 // ── Send ──
 async function send() {
   const text = inputEl.value.trim();
   if (!text) return;
   inputEl.value = '';
   addMsg(text, 'user');
-  if (isImageRequest(text)) {
+
+  if (isOcrRequest(text)) {
+    await runOcr();
+  } else if (isImageRequest(text)) {
     showTyping();
     const prompt = await getImagePrompt(text);
     hideTyping();
@@ -371,7 +405,7 @@ async function send() {
   }
 }
 
-// ── OCR ──
+// ── OCR fayl ──
 ocrBtn.addEventListener('click', () => ocrFile.click());
 
 ocrFile.addEventListener('change', function() {
@@ -379,27 +413,14 @@ ocrFile.addEventListener('change', function() {
   if (!file) return;
   this.value = '';
   const reader = new FileReader();
-  reader.onload = async function(ev) {
-    const dataUrl = ev.target.result;
-    addOcrPreview(dataUrl);
+  reader.onload = function(ev) {
+    pendingOcrImg = ev.target.result;
+    renderOcrPreview(pendingOcrImg, true);
     showTyping();
-    await new Promise(r => setTimeout(r, 800));
-    hideTyping();
-    addMsg("Rasm qabul qilindi, matnni o'qiyapman... 🔍", 'bot');
-    try {
-      showTyping();
-      const result = await Tesseract.recognize(dataUrl, 'eng+rus', { logger: () => {} });
+    setTimeout(() => {
       hideTyping();
-      const text = result.data.text.trim();
-      if (text) {
-        addMsg("📄 Rasmdagi matn:\n\n" + text, 'bot');
-      } else {
-        addMsg("Rasmdan matn topilmadi. Sifatliroq rasm yuklang 🙏", 'bot');
-      }
-    } catch(err) {
-      hideTyping();
-      addMsg("Xatolik yuz berdi. Qayta urinib ko'ring ⚠️", 'bot');
-    }
+      addMsg("Rasm qabul qilindi 🖼️\nRasmdagi matnni o'qishim uchun yozing:\n\"Rasmdagi matnni o'qib ber\"", 'bot');
+    }, 500);
   };
   reader.readAsDataURL(file);
 });
@@ -421,11 +442,8 @@ Promise.allSettled(TXT_FILES.map(f => fetch(f).then(r => r.ok ? r.text() : Promi
       }
     });
     document.getElementById('headerSub').textContent = 'Online';
-    // Xotiradan oldingi yozishmalarni yuklash
-    const hadHistory = localStorage.getItem(STORAGE_KEY);
-    if (hadHistory) {
-      loadHistory();
-    } else {
+    const hadLog = loadChatLog();
+    if (!hadLog) {
       addMsg("Assalomu alaykum! Savolingizni yozing 👇", 'bot');
     }
   });
