@@ -37,7 +37,6 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 .typing span:nth-child(3){animation-delay:.44s}
 @keyframes blink{0%,80%,100%{opacity:.25;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
-/* input bar */
 .input-bar{padding:12px 14px;background:var(--card);border-top:1px solid var(--border);display:flex;gap:9px;align-items:center;position:relative}
 .input-bar::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
 #userInput{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:22px;padding:11px 18px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
@@ -47,16 +46,13 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 #sendBtn:hover{box-shadow:0 0 24px rgba(123,94,167,0.6)}
 #sendBtn:active{transform:scale(.88)}
 #sendBtn svg{width:17px;height:17px;fill:white;margin-left:2px}
-/* OCR tugma */
 #ocrBtn{width:42px;height:42px;border-radius:50%;background:var(--card);border:1px solid var(--border2);cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:border-color .2s,box-shadow .2s}
 #ocrBtn:hover{border-color:var(--accent);box-shadow:0 0 12px rgba(123,94,167,0.3)}
 #ocrBtn:active{transform:scale(.88)}
 #ocrBtn svg{width:18px;height:18px;fill:var(--muted)}
 #ocrBtn:hover svg{fill:var(--accent2)}
-/* OCR rasm preview */
 .ocr-preview{max-width:82%;border-radius:14px;overflow:hidden;align-self:flex-end;border:1px solid var(--user-bdr);animation:fadeUp .2s ease}
 .ocr-preview img{width:100%;max-height:220px;object-fit:cover;display:block}
-/* AI rasm */
 .msg.bot.img-msg{padding:8px;max-width:90%}
 .img-wrap{position:relative;border-radius:12px;overflow:hidden;min-height:180px;background:var(--card)}
 .img-wrap img{width:100%;display:block;border-radius:12px;opacity:0;transition:opacity .5s ease}
@@ -82,14 +78,10 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
       <div class="header-sub" id="headerSub">Online</div>
     </div>
   </header>
-
   <div id="messages"></div>
-
   <div class="input-bar">
     <button id="ocrBtn" title="Rasmdan matn o'qish">
-      <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-        <path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v10h2V7H6zm4 0v10h2V7h-2zm4 0v10h2V7h-2z"/>
-      </svg>
+      <svg viewBox="0 0 24 24"><path d="M5 3h14a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2zm1 4v10h2V7H6zm4 0v10h2V7h-2zm4 0v10h2V7h-2z"/></svg>
     </button>
     <input id="userInput" type="text" placeholder="Xabar yozing..." autocomplete="off"/>
     <button id="sendBtn">
@@ -97,8 +89,6 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
     </button>
   </div>
 </div>
-
-<!-- hidden file input — galereya ochadi -->
 <input type="file" id="ocrFileInput" accept="image/*" style="position:absolute;opacity:0;pointer-events:none;width:1px;height:1px"/>
 
 <script>
@@ -112,23 +102,8 @@ const TXT_FILES = [
 ];
 // ══════════════════════════════════════
 
+const STORAGE_KEY = 'dexo_chat_v1';
 let rules = [];
-
-Promise.allSettled(TXT_FILES.map(f => fetch(f).then(r => r.ok ? r.text() : Promise.reject(f))))
-  .then(results => {
-    results.forEach(res => {
-      if (res.status === 'fulfilled') {
-        const parsed = parse(res.value);
-        for (const p of parsed) {
-          const ex = rules.find(r => r.k === p.k);
-          if (ex) ex.replies.push(...p.replies);
-          else rules.push(p);
-        }
-      }
-    });
-    document.getElementById('headerSub').textContent = 'Online';
-    addMsg("Assalomu alaykum! Savolingizni yozing 👇", 'bot');
-  });
 
 // ── Parser ──
 function parse(text) {
@@ -181,13 +156,12 @@ const IMG_TRIGGERS = [
   "描いて","画像を","絵を描いて",
   "그려","이미지","그림 그려"
 ];
-
 function isImageRequest(text) {
   const l = text.toLowerCase();
   return IMG_TRIGGERS.some(t => l.includes(t));
 }
 
-// ── Claude API: prompt tarjimon ──
+// ── Claude API prompt tarjimon ──
 async function getImagePrompt(userText) {
   try {
     const res = await fetch("https://api.anthropic.com/v1/messages", {
@@ -199,9 +173,7 @@ async function getImagePrompt(userText) {
         messages: [{
           role: "user",
           content: `You are an expert AI image prompt engineer. The user wants an image generated.
-
 User message (any language): "${userText}"
-
 Your job:
 1. Understand what subject/scene the user wants
 2. Write a detailed, specific English prompt for Pollinations.ai image generator
@@ -211,19 +183,16 @@ Your job:
 6. For objects/food: include details + style + lighting
 7. Always add: "highly detailed, sharp focus, professional photography, 8k"
 8. NEVER add artistic/painting style unless user asks to draw/paint
-
 Reply with ONLY the English prompt, nothing else, no explanation.`
         }]
       })
     });
     const data = await res.json();
     return data.content?.[0]?.text?.trim() || userText;
-  } catch(e) {
-    return userText;
-  }
+  } catch(e) { return userText; }
 }
 
-// ── Pollinations.ai rasm yaratish ──
+// ── Pollinations rasm ──
 function renderImage(prompt, originalText) {
   const seed = Math.floor(Math.random() * 99999);
   const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&seed=${seed}&nologo=true&enhance=true`;
@@ -245,12 +214,12 @@ function renderImage(prompt, originalText) {
   `;
   messagesEl.appendChild(wrap);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-  const img = document.getElementById('im' + seed);
-  const sh  = document.getElementById('sh' + seed);
-  const sp  = document.getElementById('sp' + seed);
+  const img = document.getElementById('im'+seed);
+  const sh  = document.getElementById('sh'+seed);
+  const sp  = document.getElementById('sp'+seed);
   img.onload = () => { img.classList.add('loaded'); sh.classList.add('hide'); sp.classList.add('hide'); messagesEl.scrollTop = messagesEl.scrollHeight; };
   img.onerror = () => {
-    sh.classList.add('hide'); sp.classList.add('hide'); img.style.display = 'none';
+    sh.classList.add('hide'); sp.classList.add('hide'); img.style.display='none';
     const err = document.createElement('p');
     err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
     err.textContent = "⚠️ Rasm yuklanmadi. Qayta urinib ko'ring.";
@@ -259,27 +228,67 @@ function renderImage(prompt, originalText) {
 }
 
 // ── Reply ──
-const defaults = ["Bu savolga javobim yo'q 🤔", "Tushunmadim, boshqacha so'rasangiz? 🙏", "Bu mavzu bo'yicha ma'lumotim yo'q 😅"];
+const defaults = ["Bu savolga javobim yo'q 🤔","Tushunmadim, boshqacha so'rasangiz? 🙏","Bu mavzu bo'yicha ma'lumotim yo'q 😅"];
 function getReply(text) {
   const lower = text.toLowerCase();
   const hits = rules.filter(r => r.keywords.some(k => lower.includes(k)));
-  if (!hits.length) return defaults[Math.floor(Math.random() * defaults.length)];
-  const rule = hits[Math.floor(Math.random() * hits.length)];
-  return rule.replies[Math.floor(Math.random() * rule.replies.length)];
+  if (!hits.length) return defaults[Math.floor(Math.random()*defaults.length)];
+  const rule = hits[Math.floor(Math.random()*hits.length)];
+  return rule.replies[Math.floor(Math.random()*rule.replies.length)];
 }
 
-// ── UI ──
+// ── UI elementlar ──
 const messagesEl = document.getElementById('messages');
 const inputEl    = document.getElementById('userInput');
 const sendBtnEl  = document.getElementById('sendBtn');
 const ocrBtn     = document.getElementById('ocrBtn');
 const ocrFile    = document.getElementById('ocrFileInput');
 
+// ── Xotira (localStorage) ──
+// Har xabar: { role: 'user'|'bot', text: '...' }
+// OCR preview: { role: 'ocr', src: 'data:...' }
+let history = [];
+
+function saveHistory() {
+  try { localStorage.setItem(STORAGE_KEY, JSON.stringify(history)); } catch(e) {}
+}
+
+function loadHistory() {
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (!saved) return;
+    const arr = JSON.parse(saved);
+    if (!Array.isArray(arr) || !arr.length) return;
+    arr.forEach(item => {
+      if (item.role === 'ocr') {
+        addOcrPreview(item.src, false);
+      } else {
+        addMsgDirect(item.text, item.role);
+      }
+    });
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  } catch(e) {}
+}
+
+// ── addMsgDirect: xotirasiz, to'g'ridan qo'shish (tarix yuklashda) ──
+function addMsgDirect(text, role) {
+  const d = document.createElement('div');
+  d.className = 'msg ' + role;
+  d.textContent = text;
+  messagesEl.appendChild(d);
+}
+
+// ── addMsg: typewriter + xotiraga saqlash ──
 function addMsg(text, role) {
   const d = document.createElement('div');
   d.className = 'msg ' + role;
   messagesEl.appendChild(d);
   messagesEl.scrollTop = messagesEl.scrollHeight;
+
+  // xotiraga qo'sh
+  history.push({ role, text });
+  saveHistory();
+
   if (role === 'bot') {
     let i = 0;
     const cursor = document.createElement('span');
@@ -300,6 +309,22 @@ function addMsg(text, role) {
   }
 }
 
+// ── OCR preview qo'shish ──
+function addOcrPreview(src, save = true) {
+  const prev = document.createElement('div');
+  prev.className = 'ocr-preview';
+  const pimg = document.createElement('img');
+  pimg.src = src;
+  prev.appendChild(pimg);
+  messagesEl.appendChild(prev);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  if (save) {
+    history.push({ role: 'ocr', src });
+    saveHistory();
+  }
+}
+
+// ── Typing animatsiya ──
 let _dotTimer = null;
 function showTyping() {
   const t = document.createElement('div');
@@ -347,34 +372,20 @@ async function send() {
 }
 
 // ── OCR ──
-ocrBtn.addEventListener('click', () => {
-  ocrFile.click();
-});
+ocrBtn.addEventListener('click', () => ocrFile.click());
 
 ocrFile.addEventListener('change', function() {
   const file = this.files[0];
   if (!file) return;
   this.value = '';
-
   const reader = new FileReader();
   reader.onload = async function(ev) {
     const dataUrl = ev.target.result;
-
-    // Rasm preview (user tomoni)
-    const prev = document.createElement('div');
-    prev.className = 'ocr-preview';
-    const pimg = document.createElement('img');
-    pimg.src = dataUrl;
-    prev.appendChild(pimg);
-    messagesEl.appendChild(prev);
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-
-    // Bot javobi
+    addOcrPreview(dataUrl);
     showTyping();
     await new Promise(r => setTimeout(r, 800));
     hideTyping();
     addMsg("Rasm qabul qilindi, matnni o'qiyapman... 🔍", 'bot');
-
     try {
       showTyping();
       const result = await Tesseract.recognize(dataUrl, 'eng+rus', { logger: () => {} });
@@ -395,6 +406,29 @@ ocrFile.addEventListener('change', function() {
 
 sendBtnEl.addEventListener('click', send);
 inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
+
+// ── Ishga tushirish ──
+Promise.allSettled(TXT_FILES.map(f => fetch(f).then(r => r.ok ? r.text() : Promise.reject(f))))
+  .then(results => {
+    results.forEach(res => {
+      if (res.status === 'fulfilled') {
+        const parsed = parse(res.value);
+        for (const p of parsed) {
+          const ex = rules.find(r => r.k === p.k);
+          if (ex) ex.replies.push(...p.replies);
+          else rules.push(p);
+        }
+      }
+    });
+    document.getElementById('headerSub').textContent = 'Online';
+    // Xotiradan oldingi yozishmalarni yuklash
+    const hadHistory = localStorage.getItem(STORAGE_KEY);
+    if (hadHistory) {
+      loadHistory();
+    } else {
+      addMsg("Assalomu alaykum! Savolingizni yozing 👇", 'bot');
+    }
+  });
 </script>
 </body>
 </html>
