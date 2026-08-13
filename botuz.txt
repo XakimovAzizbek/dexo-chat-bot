@@ -108,3 +108,52 @@ Muhim eslatma: Yechib olish uchun faqat ishlab topilgan yulduzlar yaroqli. Sotib
 Telegram iqtisodiyoti TON bilan chambarchas bog‘liq. Yulduzlarni Fragment orqali TON ga almashtirib olasiz, bu esa yechib olish uchun asosiy vositadir. Agar daromadingizni kanalni reklama qilishga sarflasangiz, Telegram tomonidan 30% chegirma olasiz.
 
 Telegramning monetizatsiya tizimi, ayniqsa, ko‘plab auditoriyaga ega kanallar uchun imkoniyatlar yaratadi. Biror kanalingiz bormi yoki hozircha reja tuzayapsizmi?
+
+user: Hopweb qanday ilova
+bot: HopWeb — bu Android qurilmalari uchun mo‘ljallangan mobil kod muharriri.
+
+· Ishlab chiqaruvchi: Venter Studio
+· Asosiy vazifasi: Telefonda to‘g‘ridan-to‘g‘ri PHP, HTML, CSS va JavaScript kodlarini yozish va sinab ko‘rish imkonini beradi.
+· O‘ziga xos xususiyati: Tarkibida o‘rnatilgan PHP server bor, shuning uchun internetga chiqmasdan ham kodlaringizni ishga tushirib, natijasini ko‘rishingiz mumkin.
+· Muhim eslatma: Ishlab chiquvchilar tomonidan qo‘llab-quvvatlanmaydi va yangilanmaydi — ya’ni hozircha faqat mavjud holatida ishlayveradi.
+
+---
+
+Agar siz:
+
+· Telefonda oddiy veb-sahifalar yoki PHP skriptlarini sinab ko‘rmoqchi bo‘lsangiz — bu ilova ish berishi mumkin.
+· Zamonaviy va doimiy yangilanadigan vosita izlayotgan bo‘lsangiz — boshqa alternativlarni (masalan, Acode yoki Spck kod muharrirlari) ko‘rib chiqishingizni maslahat beraman.
+
+user: Flow haqida bilasanmi
+bot: "Flow" nomi bir nechta mashhur texnologiyalarni anglatadi. Eng keng tarqalgan ikkitasini ko'rib chiqamiz:
+
+· Google Flow – Sun'iy Intellekt yordamida film yaratish: Bu Google Labs tomonidan ishlab chiqilgan, matn yoki o'z fayllaringiz asosida kinematik videokliplar yaratadigan AI vositasidir. U eng kuchli Veo 3.1 modelida ishlaydi va natijalarga ko'rinmas SynthID suv belgisi qo'yiladi.
+  · Kirish: Buning uchun 18 yoshdan katta bo'lish va Google AI Pro yoki Ultra obunalaridan biriga ega bo'lish kerak. Workspace foydalanuvchilari oyiga 50 ta bepul kredit olishlari mumkin.
+· Flow Blockchain – Web3 uchun blokcheyn: Bu Dapper Labs (CryptoKitties yaratuvchilari) tomonidan ishlab chiqilgan, keng ko'lamli ilovalar va o'yinlar uchun mo'ljallangan 1-qavat (Layer 1) blokcheyndir. NBA Top Shot va Disney Pinnacle kabi mashhur loyihalar aynan shu tarmoqda ishlaydi.
+  · Texnologiyasi: U o'zining modulli arxitekturasi va raqamli aktivlar bilan xavfsiz ishlash uchun maxsus yaratilgan Cadence dasturlash tili bilan ajralib turadi. Bundan tashqari, Ethereum ilovalari bilan to'liq mos keladi (EVM ekvivalentligi).
+  · Tokeni: Ushbu tarmoqda FLOW kriptovalyutasi mavjud bo'lib, u to'lovlar va tarmoq boshqaruvida ishlatiladi.
+
+Yana "Flow Myna" (biznes-jarayonlarni tahlil qilish platformasi) kabi boshqa nomlar ham mavjud, lekin "Flow" deyilganda ko'pincha yuqoridagi ikkitasi nazarda tutiladi. Qaysi biri sizni qiziqtiradi?
+
+
+user: Google flow haqida bilasanmi
+bot: Ha, Google Flow bu Google Labs tomonidan ishlab chiqilgan va sun'iy intellekt yordamida video yaratish, tahrirlash va musiqiy asarlar yaratish imkonini beruvchi ijodiy studiyadir. U ayniqsa, kinoijodkorlar va ijodkorlar uchun mo‘ljallangan.
+
+🎬 Asosiy xususiyatlari
+
+· Kuchli modellar: Eng ilg‘or Veo 3.1 (yuqori sifatli video) va Gemini Omni Flash (matn, rasm, video bilan ishlaydi) modellari asosida ishlaydi.
+· Murakkab boshqaruv: Bir nechta referens rasm asosida video yaratish (“Ingredients to Video”), boshlang‘ich va oxirgi kadr orasida uzluksiz o‘tish (“Frames to Video”), videoni bir daqiqagacha uzaytirish (“Extend”) kabi funksiyalarga ega.
+· Aniq tahrirlash: Sahnaga yangi obyekt qo‘shish (“Insert”) yoki keraksiz narsalarni olib tashlash (“Remove”) imkoniyati mavjud.
+· Sun'iy intellekt yordamchisi: Google Flow Agent ssenariy va g‘oyalarni ishlab chiqishda yordam beradi.
+· Maxsus vositalar: “Tools” funksiyasi orqali tabiiy tilda maxsus ish jarayonlari yaratiladi.
+· Musiqa: Google Flow Music orqali qo‘shiqlar va musiqiy videolar yaratish mumkin.
+
+🎫 Foydalanish va narx
+
+· Bepul reja: Kundalik 50 kredit beriladi (cheklangan funksiyalar bilan).
+· Pullik rejalar:
+  · AI Pro: Oylik $20, 1000 kredit.
+  · AI Ultra: Oylik $100+, 10,000 kredit va barcha funksiyalar.
+· Kredit sarfi: 8 sekundlik video yaratish Veo 3.1 Quality uchun 100 kredit, Gemini Omni Flash uchun esa 25 kredit turadi.
+
+user:
