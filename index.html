@@ -233,7 +233,7 @@ function renderImage(prompt, originalText) {
           <circle cx="12" cy="12" r="10" stroke-opacity=".2"/>
           <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
         </svg>
-        <p>Rasm yaratilmoqda...</p>
+        <p>Creating an image...</p>
       </div>
       <img id="im${seed}" src="${url}" alt="${prompt}"/>
     </div>
@@ -249,13 +249,13 @@ function renderImage(prompt, originalText) {
     sh.classList.add('hide'); sp.classList.add('hide'); img.style.display = 'none';
     const err = document.createElement('p');
     err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
-    err.textContent = "⚠️ Rasm yuklanmadi. Qayta urinib ko'ring.";
+    err.textContent = "⚠️ Image failed to load. Please try again..";
     img.parentNode.appendChild(err);
   };
 }
 
 // ── Reply ──
-const defaults = ["Bu savolga javobim yo'q 🤔","Tushunmadim, boshqacha so'rasangiz? 🙏","Bu mavzu bo'yicha ma'lumotim yo'q 😅"];
+const defaults = ["error","error","error"];
 function getReply(text) {
   const lower = text.toLowerCase();
   const hits = rules.filter(r => r.keywords.some(k => lower.includes(k)));
@@ -358,10 +358,10 @@ function showTyping() {
   const sub = document.getElementById('headerSub');
   sub.style.color = 'var(--accent2)';
   let dots = 0;
-  sub.textContent = 'Yozmoqda';
+  sub.textContent = 'Writing';
   _dotTimer = setInterval(() => {
     dots = (dots + 1) % 4;
-    sub.textContent = 'Yozmoqda' + '.'.repeat(dots);
+    sub.textContent = 'Writing' + '.'.repeat(dots);
   }, 400);
 }
 function hideTyping() {
@@ -376,13 +376,13 @@ function hideTyping() {
 // ── OCR ishga tushirish ──
 async function runOcr() {
   if (!pendingOcrImg) {
-    addMsg("Avval 🖼️ tugmasi orqali rasm yuklang!", 'bot');
+    addMsg("First upload an image using the 🖼️ button!", 'bot');
     return;
   }
   showTyping();
   await new Promise(r => setTimeout(r, 600));
   hideTyping();
-  addMsg("Rasm qabul qilindi, matnni o'qiyapman... 🔍", 'bot');
+  addMsg("Image received, reading text... 🔍", 'bot');
   try {
     showTyping();
     const result = await Tesseract.recognize(pendingOcrImg, 'eng+rus', { logger: () => {} });
@@ -392,11 +392,11 @@ async function runOcr() {
     if (txt) {
       addMsg("📄 Rasmdagi matn:\n\n" + txt, 'bot');
     } else {
-      addMsg("Rasmdan matn topilmadi. Sifatliroq rasm yuklang 🙏", 'bot');
+      addMsg("No text found in the image. Upload a higher quality image 🖼️", 'bot');
     }
   } catch(err) {
     hideTyping();
-    addMsg("Xatolik yuz berdi. Qayta urinib ko'ring ⚠️", 'bot');
+    addMsg("An error occurred. Please try again. ⚠️", 'bot');
   }
 }
 
@@ -438,7 +438,7 @@ ocrFile.addEventListener('change', function() {
     showTyping();
     setTimeout(() => {
       hideTyping();
-      addMsg("Rasm qabul qilindi 🖼️\nRasmdagi matnni o'qishim uchun yozing:\n\"Rasmdagi matnni o'qib ber\"", 'bot');
+      addMsg("Image received 🖼️\nWrite so I can read the text in the image:\n\"Read the text in the image\"", 'bot');
     }, 500);
   };
   reader.readAsDataURL(file);
@@ -463,7 +463,7 @@ Promise.allSettled(TXT_FILES.map(f => fetch(f).then(r => r.ok ? r.text() : Promi
     document.getElementById('headerSub').textContent = 'Online';
     const hadLog = loadChatLog();
     if (!hadLog) {
-      addMsg("Assalomu alaykum! Savolingizni yozing 👇", 'bot');
+      addMsg("Hello! Write your question 👇", 'bot');
     }
   });
 </script>
