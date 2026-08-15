@@ -161,3 +161,27 @@ user: telegramda bepul stars ishlaydigan botlar bormi
 bot: Ha telegramda bepul stars ishlaydigan bir necha botlar bor
 
 http://t.me/StarsovEarnBot?start=8CZ8IwC2V bu bot orqali vazifalar yani telegram kanal yoki botlarga qoʻshilish orqali stars ishlashingiz mumkin 
+
+
+
+user: Github haqida toliq maʼlumot ber 
+bot: GitHub — bu dasturchilar uchun eng katta platforma boʻlib, kod yozish, saqlash va birgalikda loyihalar ustida ishlash uchun xizmat qiladi . Asosiy jihatlari:
+
+· Asosi: Bu Git versiya nazorat tizimi uchun veb-grafik interfeys va bulutli xosting xizmati . 2018-yildan Microsoft kompaniyasiga tegishli .
+· Maqsadi: Dasturiy ta'minotni ishlab chiqishning toʻliq siklini — rejalashtirish, yaratish, koʻrib chiqish, sinov, joylashtirish va boshqarishni qoʻllab-quvvatlaydi .
+
+✨ Asosiy imkoniyatlar
+
+· Hamkorlik va kod boshqaruvi: Loyihalarni (repository) saqlash, Pull Request orqali kod koʻrib chiqish, Issues vositasida vazifalarni kuzatish va Discussions hamjamiyat muhokamalari .
+· Avtomatlashtirish (CI/CD): GitHub Actions yordamida testlash, build qilish va joylashtirish jarayonlarini avtomatlashtirish. GitHub Packages orqali o'z paketlaringizni boshqarish .
+· Xavfsizlik: Xavfsizlik zaifliklarini avtomatik aniqlash (CodeQL, Dependabot) va maxfiy tokenlarni himoya qilish .
+· Hujjatlashtirish: GitHub Pages yordamida repositorydan toʻgʻridan-toʻgʻri statik veb-sayt yoki hujjat saytini yaratish va joylashtirish .
+
+👨‍💻 Kimlar foydalanadi?
+
+Undan nafaqat dasturchilar, balki talabalar, loyiha menejerlari, tadqiqotchilar va Fortune 500 kompaniyalari ham foydalanadi . Ayniqsa, ochiq kodli (Open Source) loyihalar uchun eng mashhur platforma hisoblanadi .
+
+💰 Narx siyosati
+
+· Bepul reja: Barcha foydalanuvchilar uchun cheksiz public va private repositorylar .
+· Pullik rejalar: GitHub Team ($4/oy) va GitHub Enterprise ($21/oy) qoʻshimcha hamkorlik va xavfsizlik vositalarini taqdim etadi .
