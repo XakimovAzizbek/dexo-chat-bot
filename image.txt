@@ -1,0 +1,11 @@
+# DEXO CHAT BOT — image.txt
+# Format:
+#   user: kalit1, kalit2, kalit3
+#   image: fayl_nomi.jpg
+#
+# Rasm fayllari index.html bilan bir papkada bo'lishi kerak
+
+
+
+user: dexo chat bot rasmi kerak
+image: dexo-chat-bot.png

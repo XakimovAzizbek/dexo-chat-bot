@@ -160,20 +160,10 @@ function parse(text) {
   return out;
 }
 
-// ── Rasm yaratish trigger so'zlari ──
-const IMG_TRIGGERS = [
-  "chiz","chizib","yasab","rasm ber","rasm chiz","rasm yasa","rasm kerak","ko'rsat","tasvirla","rasmini ber",
-  "draw","generate image","create image","show me","make image","paint","sketch","illustrate","image of","picture of",
-  "нарисуй","картинку","сгенерируй","нарисовать","покажи","изображение","рисунок",
-  "ارسم","صورة","أرسم","رسم","zeichne","bild erstellen","zeig mir","male",
-  "dessine","génère","montre moi","image de","сүрөт тарт","тарт","сүрөт чий",
-  "расм кашида","тасвир","çiz","resim yap","resim çiz","çiziver",
-  "dibuja","genera imagen","muéstrame","disegna","genera immagine",
-  "画","生成图片","画一张","描いて","画像を","絵を描いて","그려","이미지","그림 그려"
-];
+// ── Rasm: image.txt kalit so'zlari asosida tekshirish ──
 function isImageRequest(text) {
-  const l = text.toLowerCase();
-  return IMG_TRIGGERS.some(t => l.includes(t));
+  const lower = text.toLowerCase();
+  return imageRules.some(r => r.keywords.some(k => lower.includes(k)));
 }
 
 // ── OCR trigger so'zlari ──
@@ -188,68 +178,68 @@ function isOcrRequest(text) {
   return OCR_TRIGGERS.some(t => l.includes(t));
 }
 
-// ── Claude API prompt tarjimon ──
-async function getImagePrompt(userText) {
-  try {
-    const res = await fetch("https://api.anthropic.com/v1/messages", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "claude-sonnet-4-6",
-        max_tokens: 120,
-        messages: [{
-          role: "user",
-          content: `You are an expert AI image prompt engineer. The user wants an image generated.
-User message (any language): "${userText}"
-Your job:
-1. Understand what subject/scene the user wants
-2. Write a detailed, specific English prompt for Pollinations.ai image generator
-3. For real people (celebrities, athletes, etc): include full name + profession + "realistic photo portrait"
-4. For animals: include breed/type + color + mood + "realistic photo"
-5. For places/nature: include location details + lighting + atmosphere
-6. For objects/food: include details + style + lighting
-7. Always add: "highly detailed, sharp focus, professional photography, 8k"
-8. NEVER add artistic/painting style unless user asks to draw/paint
-Reply with ONLY the English prompt, nothing else, no explanation.`
-        }]
-      })
-    });
-    const data = await res.json();
-    return data.content?.[0]?.text?.trim() || userText;
-  } catch(e) { return userText; }
+// ── image.txt parser ──
+// Format:
+//   user: kalit1, kalit2
+//   image: fayl.png
+let imageRules = [];
+
+fetch('image.txt')
+  .then(r => r.ok ? r.text() : Promise.reject())
+  .then(text => {
+    const lines = text.split('\n');
+    let keys = null;
+    for (const raw of lines) {
+      const line = raw.trim();
+      if (!line || line.startsWith('#')) continue;
+      if (/^user:/i.test(line)) {
+        keys = line.slice(5).trim().split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
+      } else if (/^image:/i.test(line) && keys) {
+        const file = line.slice(6).trim();
+        if (file) imageRules.push({ keywords: keys, file });
+        keys = null;
+      }
+    }
+  })
+  .catch(() => {});
+
+// image.txt dan mos fayl topish
+function findImageFile(text) {
+  const lower = text.toLowerCase();
+  const hit = imageRules.find(r => r.keywords.some(k => lower.includes(k)));
+  return hit ? hit.file : null;
 }
 
-// ── Pollinations rasm ──
-function renderImage(prompt, originalText) {
-  const seed = Math.floor(Math.random() * 99999);
-  const url = `https://image.pollinations.ai/prompt/${encodeURIComponent(prompt)}?width=768&height=768&seed=${seed}&nologo=true&enhance=true`;
+// Rasm ko'rsatish (image.txt dan)
+function renderImage(file, originalText) {
+  const id = Date.now();
   const wrap = document.createElement('div');
   wrap.className = 'msg bot img-msg';
   wrap.innerHTML = `
     <div class="img-wrap">
-      <div class="img-shimmer" id="sh${seed}"></div>
-      <div class="img-spinner" id="sp${seed}">
+      <div class="img-shimmer" id="sh${id}"></div>
+      <div class="img-spinner" id="sp${id}">
         <svg viewBox="0 0 24 24" stroke-width="2">
           <circle cx="12" cy="12" r="10" stroke-opacity=".2"/>
           <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
         </svg>
-        <p>Creating an image...</p>
+        <p>Image is being prepared...</p>
       </div>
-      <img id="im${seed}" src="${url}" alt="${prompt}"/>
+      <img id="im${id}" src="${file}" alt="${originalText}"/>
     </div>
     <div class="img-caption">🎨 ${originalText}</div>
   `;
   messagesEl.appendChild(wrap);
   messagesEl.scrollTop = messagesEl.scrollHeight;
-  const img = document.getElementById('im'+seed);
-  const sh  = document.getElementById('sh'+seed);
-  const sp  = document.getElementById('sp'+seed);
+  const img = document.getElementById('im'+id);
+  const sh  = document.getElementById('sh'+id);
+  const sp  = document.getElementById('sp'+id);
   img.onload = () => { img.classList.add('loaded'); sh.classList.add('hide'); sp.classList.add('hide'); messagesEl.scrollTop = messagesEl.scrollHeight; };
   img.onerror = () => {
     sh.classList.add('hide'); sp.classList.add('hide'); img.style.display = 'none';
     const err = document.createElement('p');
     err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
-    err.textContent = "⚠️ Image failed to load. Please try again..";
+    err.textContent = "⚠️ Rasm topilmadi. image.txt va rasm faylini tekshiring.";
     img.parentNode.appendChild(err);
   };
 }
@@ -411,10 +401,16 @@ async function send() {
     await runOcr();
   } else if (isImageRequest(text)) {
     showTyping();
-    const prompt = await getImagePrompt(text);
+    await new Promise(r => setTimeout(r, 800));
     hideTyping();
-    addMsg("Rasm yaratilmoqda... 🎨", 'bot');
-    renderImage(prompt, text);
+    const file = findImageFile(text);
+    if (file) {
+      addMsg("Image is being prepared... 🎨", 'bot');
+      renderImage(file, text);
+    } else {
+      // Rasm yo'q — oddiy javob qaytaradi, hech narsa demaydi
+      addMsg(getReply(text), 'bot');
+    }
   } else {
     showTyping();
     setTimeout(() => {
