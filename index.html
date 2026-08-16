@@ -251,6 +251,80 @@ function renderImage(file, originalText) {
   };
 }
 
+// ── video.txt parser ──
+let videoRules = [];
+(function(){
+  var x = new XMLHttpRequest();
+  x.open('GET', 'https://xakimovazizbek.github.io/dexo-chat-bot/video.txt', false);
+  try { x.send(); } catch(e) { return; }
+  if (!x.responseText) return;
+  var lines = x.responseText.split('\n'), keys = null;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line || line.charAt(0) === '#') continue;
+    if (/^user:/i.test(line)) {
+      keys = line.slice(5).trim().split(',').map(function(s){ return s.trim().toLowerCase(); }).filter(Boolean);
+    } else if (/^video:/i.test(line) && keys) {
+      var file = line.slice(6).trim();
+      if (file) videoRules.push({ keywords: keys, file: file });
+      keys = null;
+    }
+  }
+})();
+
+// Foydalanuvchi matni videoRules kalit so'zlari bilan TOLIK mos kelishini tekshirish
+function isVideoRequest(text) {
+  const lower = text.toLowerCase().trim();
+  return videoRules.some(r => r.keywords.some(k => lower === k));
+}
+
+function findVideoFile(text) {
+  const lower = text.toLowerCase().trim();
+  const hit = videoRules.find(r => r.keywords.some(k => lower === k));
+  return hit ? hit.file : null;
+}
+
+// Video ko'rsatish
+function renderVideo(file, originalText) {
+  const id = Date.now();
+  const wrap = document.createElement('div');
+  wrap.className = 'msg bot video-msg';
+  wrap.innerHTML = `
+    <div class="video-wrap">
+      <div class="img-shimmer" id="vsh${id}"></div>
+      <div class="img-spinner" id="vsp${id}">
+        <svg viewBox="0 0 24 24" stroke-width="2">
+          <circle cx="12" cy="12" r="10" stroke-opacity=".2"/>
+          <path d="M12 2a10 10 0 0 1 10 10" stroke-linecap="round"/>
+        </svg>
+        <p>Video is being prepared...</p>
+      </div>
+      <video id="vid${id}" src="${file}" controls playsinline preload="metadata" style="opacity:0;transition:opacity .4s;width:100%;max-height:70vw;object-fit:contain"></video>
+    </div>
+    <div class="video-caption">🎬 ${originalText}</div>
+  `;
+  messagesEl.appendChild(wrap);
+  messagesEl.scrollTop = messagesEl.scrollHeight;
+  const vid = document.getElementById('vid'+id);
+  const vsh = document.getElementById('vsh'+id);
+  const vsp = document.getElementById('vsp'+id);
+  vid.oncanplay = () => {
+    vid.style.opacity = '1';
+    vsh.classList.add('hide');
+    vsp.classList.add('hide');
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  };
+  vid.onerror = () => {
+    vsh.classList.add('hide');
+    vsp.classList.add('hide');
+    vid.style.display = 'none';
+    const err = document.createElement('p');
+    err.style.cssText = 'color:var(--muted);font-size:13px;padding:16px;text-align:center';
+    err.textContent = "⚠️ Video topilmadi.";
+    vid.parentNode.appendChild(err);
+  };
+}
+
 // ── Reply ──
 const defaults = ["error","error","error"];
 function getReply(text) {
@@ -444,6 +518,17 @@ async function send() {
 
   if (isOcrRequest(text)) {
     await runOcr();
+  } else if (isVideoRequest(text)) {
+    showTyping();
+    await new Promise(r => setTimeout(r, 800));
+    hideTyping();
+    const vfile = findVideoFile(text);
+    if (vfile) {
+      addMsg("Video is being prepared... 🎬", 'bot');
+      renderVideo(vfile, text);
+    } else {
+      addMsg(getReply(text), 'bot');
+    }
   } else if (isImageRequest(text)) {
     showTyping();
     await new Promise(r => setTimeout(r, 800));
