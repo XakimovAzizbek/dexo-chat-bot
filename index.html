@@ -406,7 +406,17 @@ async function runPhoneAction(action) {
   if (action.startsWith('OPEN:')) {
     var url = action.slice(5).trim();
     try {
-      window.open(url, '_blank');
+      // tg://, whatsapp://, youtube:// kabi deep linklar uchun intent:// formatiga o'tkazish
+      if (!url.startsWith('http') && !url.startsWith('https')) {
+        // Deep link — masalan tg://, whatsapp://
+        var scheme = url.split(':')[0]; // tg
+        var rest = url.slice(scheme.length + 3); // qolgan qism
+        var intentUrl = 'intent://' + rest + '#Intent;scheme=' + scheme + ';end';
+        window.location.href = intentUrl;
+      } else {
+        // Oddiy https:// link
+        window.open(url, '_blank');
+      }
       addMsg("Ochilmoqda... ✅", 'bot');
     } catch(e) {
       addMsg("Ochib bo'lmadi.", 'bot');
