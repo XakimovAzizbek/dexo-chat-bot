@@ -12,3 +12,6 @@ image: dexo-chat-bot.png
 
 user: TEZKOR HELP NOMI UCHUN RASM YASAB BER
 image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_201539_473.jpg
+
+user: Humo uchun rasm yasab ber
+image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_202348_383.jpg
