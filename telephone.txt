@@ -1,0 +1,32 @@
+# DEXO CHAT BOT — telephone.txt
+# Telefonni boshqarish uchun
+#
+# Format:
+#   user: foydalanuvchi yozadigan ANIQ matn
+#   action: TORCH_ON | TORCH_OFF | VIBRATE | OPEN:link
+#
+# action turlari:
+#   TORCH_ON       — fonarni yoqish
+#   TORCH_OFF      — fonarni o'chirish
+#   VIBRATE        — telefonni tebratish
+#   OPEN:tg://     — Telegram ochish
+#   OPEN:https://t.me/dexo  — Telegram kanalga o'tish
+#   OPEN:https://youtube.com — YouTube ochish
+
+user: fonarni yoq
+action: TORCH_ON
+
+user: fonarni o'chir
+action: TORCH_OFF
+
+user: telefon tebrat
+action: VIBRATE
+
+user: telegramga kir
+action: OPEN:tg://
+
+user: youtube och
+action: OPEN:https://youtube.com
+
+user: instagramga kir
+action: OPEN:https://instagram.com

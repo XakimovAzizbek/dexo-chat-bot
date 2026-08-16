@@ -325,6 +325,98 @@ function renderVideo(file, originalText) {
   };
 }
 
+// ── telephone.txt parser ──
+// Format:
+//   user: foydalanuvchi matni
+//   action: TORCH_ON | TORCH_OFF | OPEN:tg:// | VIBRATE | OPEN:https://...
+let phoneRules = [];
+(function(){
+  var x = new XMLHttpRequest();
+  x.open('GET', 'https://xakimovazizbek.github.io/dexo-chat-bot/telephone.txt', false);
+  try { x.send(); } catch(e) { return; }
+  if (!x.responseText) return;
+  var lines = x.responseText.split('\n'), keys = null;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line || line.charAt(0) === '#') continue;
+    if (/^user:/i.test(line)) {
+      keys = line.slice(5).trim().split(',').map(function(s){ return s.trim().toLowerCase(); }).filter(Boolean);
+    } else if (/^action:/i.test(line) && keys) {
+      var act = line.slice(7).trim();
+      if (act) phoneRules.push({ keywords: keys, action: act });
+      keys = null;
+    }
+  }
+})();
+
+function isPhoneRequest(text) {
+  var lower = text.toLowerCase().trim();
+  return phoneRules.some(function(r){ return r.keywords.some(function(k){ return lower === k; }); });
+}
+
+function findPhoneAction(text) {
+  var lower = text.toLowerCase().trim();
+  var hit = phoneRules.find(function(r){ return r.keywords.some(function(k){ return lower === k; }); });
+  return hit ? hit.action : null;
+}
+
+// Torch stream
+var _torchStream = null;
+
+async function runPhoneAction(action) {
+  // TORCH_ON
+  if (action === 'TORCH_ON') {
+    try {
+      _torchStream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'environment' }
+      });
+      var track = _torchStream.getVideoTracks()[0];
+      await track.applyConstraints({ advanced: [{ torch: true }] });
+      addMsg("Fonar yoqildi 🔦", 'bot');
+    } catch(e) {
+      addMsg("Fonarni yoqib bo'lmadi. Ruxsat bering yoki qurilma qo'llab-quvvatlamaydi.", 'bot');
+    }
+    return;
+  }
+
+  // TORCH_OFF
+  if (action === 'TORCH_OFF') {
+    if (_torchStream) {
+      _torchStream.getTracks().forEach(function(t){ t.stop(); });
+      _torchStream = null;
+      addMsg("Fonar o'chirildi 🔦", 'bot');
+    } else {
+      addMsg("Fonar allaqachon o'chiq.", 'bot');
+    }
+    return;
+  }
+
+  // VIBRATE
+  if (action === 'VIBRATE') {
+    if (navigator.vibrate) {
+      navigator.vibrate([200, 100, 200]);
+      addMsg("Telefon tebratildi 📳", 'bot');
+    } else {
+      addMsg("Vibro qo'llab-quvvatlanmaydi.", 'bot');
+    }
+    return;
+  }
+
+  // OPEN:url yoki deep link
+  if (action.startsWith('OPEN:')) {
+    var url = action.slice(5).trim();
+    try {
+      window.open(url, '_blank');
+      addMsg("Ochilmoqda... ✅", 'bot');
+    } catch(e) {
+      addMsg("Ochib bo'lmadi.", 'bot');
+    }
+    return;
+  }
+
+  addMsg("Noma'lum buyruq.", 'bot');
+}
+
 // ── Reply ──
 const defaults = ["error","error","error"];
 function getReply(text) {
@@ -518,6 +610,16 @@ async function send() {
 
   if (isOcrRequest(text)) {
     await runOcr();
+  } else if (isPhoneRequest(text)) {
+    showTyping();
+    await new Promise(r => setTimeout(r, 600));
+    hideTyping();
+    var paction = findPhoneAction(text);
+    if (paction) {
+      await runPhoneAction(paction);
+    } else {
+      addMsg(getReply(text), 'bot');
+    }
   } else if (isVideoRequest(text)) {
     showTyping();
     await new Promise(r => setTimeout(r, 800));
