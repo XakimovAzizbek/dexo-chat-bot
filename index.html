@@ -38,6 +38,8 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 @keyframes blink{0%,80%,100%{opacity:.25;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
 .tts-btn{position:absolute;bottom:6px;right:8px;background:none;border:none;cursor:pointer;font-size:13px;opacity:0.45;transition:opacity .2s;padding:2px 4px;line-height:1}
+.msg a{color:var(--accent3);text-decoration:underline;word-break:break-all}
+.msg a:hover{opacity:.8}
 .tts-btn:hover{opacity:1}
 .tts-btn.playing{opacity:1;animation:ttsPulse .8s infinite alternate}
 @keyframes ttsPulse{from{opacity:0.4}to{opacity:1}}
@@ -75,6 +77,7 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 #introScreen video{width:100%;height:100%;object-fit:cover}
 #introScreen.hide{display:none}
 </style>
+<script src="https://code.responsivevoice.org/responsivevoice.js?key=FREE"></script>
 </head>
 <body>
 <!-- INTRO VIDEO -->
@@ -307,11 +310,22 @@ function renderOcrPreview(src, save) {
 function renderMsgDirect(text, role) {
   const d = document.createElement('div');
   d.className = 'msg ' + role;
-  d.textContent = text;
+  if (/(https?:\/\/)/.test(text)) {
+    d.innerHTML = linkify(text);
+  } else {
+    d.textContent = text;
+  }
   messagesEl.appendChild(d);
 }
 
 // ── Xabar: typewriter + saqlash ──
+// Matn ichidagi linkni <a> ga aylantirish
+function linkify(text) {
+  return text.replace(/(https?:\/\/[^\s]+)/g, function(url) {
+    return '<a href="' + url + '" target="_blank" rel="noopener noreferrer" onclick="window.open(this.href,\'_blank\');return false;">' + url + '</a>';
+  });
+}
+
 function addMsg(text, role) {
   const d = document.createElement('div');
   d.className = 'msg ' + role;
@@ -334,22 +348,25 @@ function addMsg(text, role) {
       } else {
         clearInterval(timer);
         cursor.remove();
-        // TTS tugmasi
+        // Linkni <a> ga aylantirish
+        d.innerHTML = linkify(d.textContent);
+        // TTS tugmasi (ResponsiveVoice)
         var btn = document.createElement('button');
         btn.className = 'tts-btn';
         btn.textContent = '\uD83D\uDD0A';
         btn.onclick = function() {
-          if (window.speechSynthesis.speaking) {
-            window.speechSynthesis.cancel();
+          if (typeof responsiveVoice === 'undefined') return;
+          if (responsiveVoice.isPlaying()) {
+            responsiveVoice.cancel();
             btn.classList.remove('playing');
             return;
           }
-          var utt = new SpeechSynthesisUtterance(text);
-          utt.rate = 0.95;
-          utt.onstart = function(){ btn.classList.add('playing'); };
-          utt.onend = function(){ btn.classList.remove('playing'); };
-          utt.onerror = function(){ btn.classList.remove('playing'); };
-          window.speechSynthesis.speak(utt);
+          btn.classList.add('playing');
+          responsiveVoice.speak(text, 'Russian Female', {
+            rate: 0.9,
+            onend: function(){ btn.classList.remove('playing'); },
+            onerror: function(){ btn.classList.remove('playing'); }
+          });
         };
         d.style.position = 'relative';
         d.style.paddingBottom = '22px';
@@ -357,7 +374,11 @@ function addMsg(text, role) {
       }
     }, 18);
   } else {
-    d.textContent = text;
+    if (/(https?:\/\/)/.test(text)) {
+      d.innerHTML = linkify(text);
+    } else {
+      d.textContent = text;
+    }
   }
 }
 
