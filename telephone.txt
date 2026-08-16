@@ -16,7 +16,7 @@
 user: fonarni yoq
 action: TORCH_ON
 
-user: fonarni o'chir
+user: fonarni o'chir, fonarni oʻchir
 action: TORCH_OFF
 
 user: telefon tebrat
@@ -30,3 +30,6 @@ action: OPEN:https://youtube.com
 
 user: instagramga kir
 action: OPEN:https://instagram.com
+
+user: youtube studioga kir
+action: OPEN:https://studio.youtube.com
