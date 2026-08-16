@@ -15,3 +15,6 @@ image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_201539_473.jp
 
 user: Humo uchun rasm yasab ber
 image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_202348_383.jpg
+
+user: telegram stars rasm yasab ber
+image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_203441_640.jpg
