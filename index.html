@@ -37,6 +37,10 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 .typing span:nth-child(3){animation-delay:.44s}
 @keyframes blink{0%,80%,100%{opacity:.25;transform:scale(.75)}40%{opacity:1;transform:scale(1)}}
 @keyframes cursorBlink{0%,100%{opacity:1}50%{opacity:0}}
+.tts-btn{position:absolute;bottom:6px;right:8px;background:none;border:none;cursor:pointer;font-size:13px;opacity:0.45;transition:opacity .2s;padding:2px 4px;line-height:1}
+.tts-btn:hover{opacity:1}
+.tts-btn.playing{opacity:1;animation:ttsPulse .8s infinite alternate}
+@keyframes ttsPulse{from{opacity:0.4}to{opacity:1}}
 .input-bar{padding:12px 14px;background:var(--card);border-top:1px solid var(--border);display:flex;gap:9px;align-items:center;position:relative}
 .input-bar::before{content:'';position:absolute;top:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,var(--accent),transparent)}
 #userInput{flex:1;background:var(--bg);border:1px solid var(--border2);border-radius:22px;padding:11px 18px;color:var(--text);font-size:14px;font-family:'Inter',sans-serif;outline:none;transition:border-color .2s,box-shadow .2s}
@@ -115,9 +119,9 @@ header::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px
 // 📄 TXT FAYLLAR RO'YXATI
 // ══════════════════════════════════════
 const TXT_FILES = [
-  'botuz.txt',
-  // 'botru.txt',
-  // 'boten.txt',
+  'https://xakimovazizbek.github.io/dexo-chat-bot/botuz.txt',
+  'https://xakimovazizbek.github.io/dexo-chat-bot/botru.txt',
+  'https://xakimovazizbek.github.io/dexo-chat-bot/boten.txt',
 ];
 // ══════════════════════════════════════
 
@@ -184,24 +188,24 @@ function isOcrRequest(text) {
 //   image: fayl.png
 let imageRules = [];
 
-fetch('image.txt')
-  .then(r => r.ok ? r.text() : Promise.reject())
-  .then(text => {
-    const lines = text.split('\n');
-    let keys = null;
-    for (const raw of lines) {
-      const line = raw.trim();
-      if (!line || line.startsWith('#')) continue;
-      if (/^user:/i.test(line)) {
-        keys = line.slice(5).trim().split(',').map(s => s.trim().toLowerCase()).filter(Boolean);
-      } else if (/^image:/i.test(line) && keys) {
-        const file = line.slice(6).trim();
-        if (file) imageRules.push({ keywords: keys, file });
-        keys = null;
-      }
+(function(){
+  var x = new XMLHttpRequest();
+  x.open('GET', 'https://xakimovazizbek.github.io/dexo-chat-bot/image.txt', false);
+  try { x.send(); } catch(e) { return; }
+  if (!x.responseText) return;
+  var lines = x.responseText.split('\n'), keys = null;
+  for (var i = 0; i < lines.length; i++) {
+    var line = lines[i].trim();
+    if (!line || line.charAt(0) === '#') continue;
+    if (/^user:/i.test(line)) {
+      keys = line.slice(5).trim().split(',').map(function(s){ return s.trim().toLowerCase(); }).filter(Boolean);
+    } else if (/^image:/i.test(line) && keys) {
+      var file = line.slice(6).trim();
+      if (file) imageRules.push({ keywords: keys, file: file });
+      keys = null;
     }
-  })
-  .catch(() => {});
+  }
+})();
 
 // image.txt dan mos fayl topish
 function findImageFile(text) {
@@ -330,6 +334,26 @@ function addMsg(text, role) {
       } else {
         clearInterval(timer);
         cursor.remove();
+        // TTS tugmasi
+        var btn = document.createElement('button');
+        btn.className = 'tts-btn';
+        btn.textContent = '\uD83D\uDD0A';
+        btn.onclick = function() {
+          if (window.speechSynthesis.speaking) {
+            window.speechSynthesis.cancel();
+            btn.classList.remove('playing');
+            return;
+          }
+          var utt = new SpeechSynthesisUtterance(text);
+          utt.rate = 0.95;
+          utt.onstart = function(){ btn.classList.add('playing'); };
+          utt.onend = function(){ btn.classList.remove('playing'); };
+          utt.onerror = function(){ btn.classList.remove('playing'); };
+          window.speechSynthesis.speak(utt);
+        };
+        d.style.position = 'relative';
+        d.style.paddingBottom = '22px';
+        d.appendChild(btn);
       }
     }, 18);
   } else {
@@ -443,25 +467,29 @@ ocrFile.addEventListener('change', function() {
 sendBtnEl.addEventListener('click', send);
 inputEl.addEventListener('keydown', e => { if (e.key === 'Enter') send(); });
 
-// ── Ishga tushirish ──
-Promise.allSettled(TXT_FILES.map(f => fetch(f).then(r => r.ok ? r.text() : Promise.reject(f))))
-  .then(results => {
-    results.forEach(res => {
-      if (res.status === 'fulfilled') {
-        const parsed = parse(res.value);
-        for (const p of parsed) {
-          const ex = rules.find(r => r.k === p.k);
-          if (ex) ex.replies.push(...p.replies);
+// ── Ishga tushirish (XHR sync — APK + GitHub Pages da ishlaydi) ──
+(function(){
+  TXT_FILES.forEach(function(f) {
+    try {
+      var x = new XMLHttpRequest();
+      x.open('GET', f, false);
+      x.send();
+      if (x.responseText) {
+        var parsed = parse(x.responseText);
+        parsed.forEach(function(p) {
+          var ex = rules.find(function(r){ return r.k === p.k; });
+          if (ex) ex.replies.push.apply(ex.replies, p.replies);
           else rules.push(p);
-        }
+        });
       }
-    });
-    document.getElementById('headerSub').textContent = 'Online';
-    const hadLog = loadChatLog();
-    if (!hadLog) {
-      addMsg("Hello! Write your question 👇", 'bot');
-    }
+    } catch(e) {}
   });
+  document.getElementById('headerSub').textContent = 'Online';
+  var hadLog = loadChatLog();
+  if (!hadLog) {
+    addMsg("Assalomu alaykum! Savolingizni yozing 👇", 'bot');
+  }
+})();
 </script>
 </body>
-</html>
+</html>.
