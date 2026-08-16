@@ -18,3 +18,6 @@ image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_202348_383.jp
 
 user: telegram stars rasm yasab ber
 image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_203441_640.jpg
+
+user: dumaloq shaklda Oʻzbekiston bayrogʻi rasmi kerak 
+image: https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260816_211725_381.jpg
