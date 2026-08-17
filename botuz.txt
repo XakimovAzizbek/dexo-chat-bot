@@ -191,7 +191,8 @@ user: sen telefonni boshqara olasanmi, sen telefonni boshqara olasanmi?
 bot: Ha men sizning telefoningizni boshqara olaman.
 Agar sizning mobil telefoningiz boshqarish uchun ruxsat berilgan boʻlsa
 
-men hozirda qiyidagi funksiyalarni bilaman👇
 
-telefonni chirogini yoqish
-ilovalarga kirish
+
+user: dexo chat ilovasi kerak
+bot: ilovani pastda link orqali yuklab olishingiz mumkin👇
+https://github.com/XakimovAzizbek/dexo-chat-bot/raw/refs/heads/main/DEXO%20CHAT%20BOT%20.apk
