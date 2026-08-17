@@ -6,6 +6,10 @@
 # Rasm fayllari index.html bilan bir papkada bo'lishi kerak
 
 
+user: Golden uchun rasm yasab ber
+image: https://xakimovazizbek.github.io/dexo-chat-bot/file_00000000bee881f4a350841fc59f6870.png
+
+
 
 user: dexo chat bot rasmi kerak
 image: dexo-chat-bot.png
