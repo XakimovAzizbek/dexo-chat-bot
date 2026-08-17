@@ -202,3 +202,9 @@ user: spotify ilovasini qayerdan yuklab oladi
 bot: spotify ilovasini Google play market orqali yuklab olish mumkin
 
 Link orqali yuklab olishingiz mumkin: https://play.google.com/store/apps/details?id=com.spotify.music
+
+
+user: youtube studio ilovasini qayerdan yuklab olish mumkin
+bot: Youtube studio ilovasini Android telefonlar uchun Google play market orqali yuklab olishingiz mumkin 
+
+yuklab olish uchun link: https://play.google.com/store/apps/details?id=com.google.android.apps.youtube.creator
