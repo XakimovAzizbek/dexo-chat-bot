@@ -16,7 +16,7 @@
 user: fonarni yoq, Fonarni yoʻq, Telefonim chirogʻini yoq, 
 action: TORCH_ON
 
-user: fonarni o'chir, fonarni oʻchir, chiroqni o'chir, chiroqni o`chir, chiroqni oʼchir
+user: fonarni o'chir, fonarni oʻchir, chiroqni o'chir, chiroqni o`chir, chiroqni oʼchir, chiroqni ochir
 action: TORCH_OFF
 
 user: telefon tebrat
