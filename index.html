@@ -204,21 +204,32 @@ let imageRules = [];
       keys = line.slice(5).trim().split(',').map(function(s){ return s.trim().toLowerCase(); }).filter(Boolean);
     } else if (/^image:/i.test(line) && keys) {
       var file = line.slice(6).trim();
-      if (file) imageRules.push({ keywords: keys, file: file });
+      if (file) imageRules.push({ keywords: keys, file: file, video: null });
+      // keys saqlanadi — keyingi video: qatorni kutadi
+    } else if (/^video:/i.test(line) && keys) {
+      var vfile = line.slice(6).trim();
+      // Oxirgi qo'shilgan imageRule ga video biriktirish
+      if (vfile && imageRules.length) {
+        imageRules[imageRules.length - 1].video = vfile;
+      }
       keys = null;
     }
   }
 })();
 
 // image.txt dan mos fayl topish
-function findImageFile(text) {
+function findImageRule(text) {
   const lower = text.toLowerCase();
-  const hit = imageRules.find(r => r.keywords.some(k => lower.includes(k)));
-  return hit ? hit.file : null;
+  return imageRules.find(r => r.keywords.some(k => lower.includes(k))) || null;
+}
+function findImageFile(text) {
+  const rule = findImageRule(text);
+  return rule ? rule.file : null;
 }
 
 // Rasm ko'rsatish (image.txt dan)
-function renderImage(file, originalText) {
+function renderImage(file, originalText, videoFile) {
+  videoFile = videoFile || null;
   const id = Date.now();
   const wrap = document.createElement('div');
   wrap.className = 'msg bot img-msg';
@@ -241,7 +252,22 @@ function renderImage(file, originalText) {
   const img = document.getElementById('im'+id);
   const sh  = document.getElementById('sh'+id);
   const sp  = document.getElementById('sp'+id);
-  img.onload = () => { img.classList.add('loaded'); sh.classList.add('hide'); sp.classList.add('hide'); messagesEl.scrollTop = messagesEl.scrollHeight; };
+  img.onload = () => {
+    img.classList.add('loaded'); sh.classList.add('hide'); sp.classList.add('hide');
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+    // video: mavjud bo'lsa Convert tugmasi chiqar
+    if (videoFile) {
+      const btn = document.createElement('button');
+      btn.className = 'convert-btn';
+      btn.textContent = '🎬 Convert to video';
+      btn.onclick = function() {
+        btn.remove();
+        renderVideo(videoFile, originalText);
+      };
+      wrap.appendChild(btn);
+      messagesEl.scrollTop = messagesEl.scrollHeight;
+    }
+  };
   img.onerror = () => {
     sh.classList.add('hide'); sp.classList.add('hide'); img.style.display = 'none';
     const err = document.createElement('p');
@@ -661,10 +687,10 @@ async function send() {
     showTyping();
     await new Promise(r => setTimeout(r, 800));
     hideTyping();
-    const file = findImageFile(text);
-    if (file) {
+    const rule = findImageRule(text);
+    if (rule) {
       addMsg("Image is being prepared... 🎨", 'bot');
-      renderImage(file, text);
+      renderImage(rule.file, text, rule.video);
     } else {
       // Rasm yo'q — oddiy javob qaytaradi, hech narsa demaydi
       addMsg(getReply(text), 'bot');
