@@ -424,6 +424,22 @@ async function runPhoneAction(action) {
     return;
   }
 
+  // BATTERY
+  if (action === 'BATTERY') {
+    if (navigator.getBattery) {
+      navigator.getBattery().then(function(battery) {
+        var pct = Math.round(battery.level * 100);
+        var charging = battery.charging ? " (zaryadlanmoqda ⚡)" : "";
+        addMsg("🔋 Batareya: " + pct + "%" + charging, 'bot');
+      }).catch(function(){
+        addMsg("Batareya ma'lumotini olib bo'lmadi.", 'bot');
+      });
+    } else {
+      addMsg("Bu qurilma batareya ma'lumotini qo'llab-quvvatlamaydi.", 'bot');
+    }
+    return;
+  }
+
   addMsg("Noma'lum buyruq.", 'bot');
 }
 

@@ -33,3 +33,9 @@ action: OPEN:https://instagram.com
 
 user: youtube studioga kir
 action: OPEN:https://studio.youtube.com
+
+user: batareya necha foiz
+action: BATTERY
+
+user: batareya holati
+action: BATTERY
