@@ -185,3 +185,13 @@ Undan nafaqat dasturchilar, balki talabalar, loyiha menejerlari, tadqiqotchilar 
 
 · Bepul reja: Barcha foydalanuvchilar uchun cheksiz public va private repositorylar .
 · Pullik rejalar: GitHub Team ($4/oy) va GitHub Enterprise ($21/oy) qoʻshimcha hamkorlik va xavfsizlik vositalarini taqdim etadi .
+
+
+user: sen telefonni boshqara olasanmi, sen telefonni boshqara olasanmi?
+bot: Ha men sizning telefoningizni boshqara olaman.
+Agar sizning mobil telefoningiz boshqarish uchun ruxsat berilgan boʻlsa
+
+men hozirda qiyidagi funksiyalarni bilaman👇
+
+telefonni chirogini yoqish
+ilovalarga kirish
