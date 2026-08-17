@@ -39,3 +39,6 @@ action: BATTERY
 
 user: batareya holati
 action: BATTERY
+
+user: batareya zaryadi
+action: BATTERY
