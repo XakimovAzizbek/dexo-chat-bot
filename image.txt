@@ -6,6 +6,10 @@
 # Rasm fayllari index.html bilan bir papkada bo'lishi kerak
 
 
+user: payme uchun rasm yasab ber 
+image:  https://xakimovazizbek.github.io/dexo-chat-bot/IMG_20260817_093929_599.jpg
+
+
 user: Golden uchun rasm yasab ber
 image: https://xakimovazizbek.github.io/dexo-chat-bot/file_00000000bee881f4a350841fc59f6870.png
 
