@@ -13,7 +13,7 @@
 #   OPEN:https://t.me/dexo  — Telegram kanalga o'tish
 #   OPEN:https://youtube.com — YouTube ochish
 
-user: fonarni yoq
+user: fonarni yoq, Fonarni yoʻq, Telefonim chirogʻini yoq, 
 action: TORCH_ON
 
 user: fonarni o'chir, fonarni oʻchir
