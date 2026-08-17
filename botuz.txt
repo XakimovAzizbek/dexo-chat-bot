@@ -196,3 +196,9 @@ Agar sizning mobil telefoningiz boshqarish uchun ruxsat berilgan boʻlsa
 user: dexo chat ilovasi kerak
 bot: ilovani pastda link orqali yuklab olishingiz mumkin👇
 https://github.com/XakimovAzizbek/dexo-chat-bot/raw/refs/heads/main/DEXO%20CHAT%20BOT%20.apk
+
+
+user: spotify ilovasini qayerdan yuklab oladi
+bot: spotify ilovasini Google play market orqali yuklab olish mumkin
+
+Link orqali yuklab olishingiz mumkin: https://play.google.com/store/apps/details?id=com.spotify.music
