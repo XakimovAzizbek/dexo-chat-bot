@@ -1,2 +1,6 @@
 user: Xiaomi 11 ultra uchun video yasab ber
 video: https://xakimovazizbek.github.io/dexo-chat-bot/lv_0_20260816231104.mp4
+
+
+user: Samsung s22 ultra uchun video yasab ber
+video: https://github.com/XakimovAzizbek/dexo-chat-bot/releases/download/video/lv_0_20260817091039.mp4
