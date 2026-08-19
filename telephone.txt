@@ -13,32 +13,71 @@
 #   OPEN:https://t.me/dexo  — Telegram kanalga o'tish
 #   OPEN:https://youtube.com — YouTube ochish
 
-user: fonarni yoq, Fonarni yoʻq, Telefonim chirogʻini yoq, 
+user: fonarni yoq, Telefonim chirogʻini yoq, 
 action: TORCH_ON
+
+user: Turn on the flashlight, Turn on my phone's flashlight, 
+action: TORCH_ON
+
 
 user: fonarni o'chir, fonarni oʻchir, chiroqni o'chir, chiroqni o`chir, chiroqni oʼchir, chiroqni ochir
 action: TORCH_OFF
 
+user: Turn off the light, Turn off the flashlight, Turn off the light
+action: TORCH_OFF
+
+
 user: telefon tebrat
 action: VIBRATE
+
+user: phone vibrate
+action: VIBRATE
+
 
 user: telegramga kir
 action: OPEN:tg://
 
+user: join telegram
+action: OPEN:tg://
+
+
 user: youtube och
 action: OPEN:https://youtube.com
+
+user: open youtube
+action: OPEN:https://youtube.com
+
 
 user: instagramga kir
 action: OPEN:https://instagram.com
 
+user: go to instagram
+action: OPEN:https://instagram.com
+
+
 user: youtube studioga kir
 action: OPEN:https://studio.youtube.com
+
+user: enter youtube studio
+action: OPEN:https://studio.youtube.com
+
 
 user: batareya necha foiz
 action: BATTERY
 
+user: What percentage is the battery?
+action: BATTERY
+
+
 user: batareya holati
 action: BATTERY
 
+user: battery status
+action: BATTERY
+
+
 user: batareya zaryadi
+action: BATTERY
+
+user: battery charge
 action: BATTERY
