@@ -398,9 +398,9 @@ async function runPhoneAction(action) {
       });
       var track = _torchStream.getVideoTracks()[0];
       await track.applyConstraints({ advanced: [{ torch: true }] });
-      addMsg("Fonar yoqildi 🔦", 'bot');
+      addMsg("The flashlight is on. 🔦", 'bot');
     } catch(e) {
-      addMsg("Fonarni yoqib bo'lmadi. Ruxsat bering yoki qurilma qo'llab-quvvatlamaydi.", 'bot');
+      addMsg("Unable to turn on the flashlight. Please allow it, otherwise the device does not support it..", 'bot');
     }
     return;
   }
@@ -410,9 +410,9 @@ async function runPhoneAction(action) {
     if (_torchStream) {
       _torchStream.getTracks().forEach(function(t){ t.stop(); });
       _torchStream = null;
-      addMsg("Fonar o'chirildi 🔦", 'bot');
+      addMsg("The flashlight is off. 🔦", 'bot');
     } else {
-      addMsg("Fonar allaqachon o'chiq.", 'bot');
+      addMsg("The flashlight is already off..", 'bot');
     }
     return;
   }
@@ -443,9 +443,9 @@ async function runPhoneAction(action) {
         // Oddiy https:// link
         window.open(url, '_blank');
       }
-      addMsg("Ochilmoqda... ✅", 'bot');
+      addMsg("Opening... ✅", 'bot');
     } catch(e) {
-      addMsg("Ochib bo'lmadi.", 'bot');
+      addMsg("Could not open..", 'bot');
     }
     return;
   }
@@ -455,18 +455,18 @@ async function runPhoneAction(action) {
     if (navigator.getBattery) {
       navigator.getBattery().then(function(battery) {
         var pct = Math.round(battery.level * 100);
-        var charging = battery.charging ? " (zaryadlanmoqda ⚡)" : "";
-        addMsg("🔋 Batareya: " + pct + "%" + charging, 'bot');
+        var charging = battery.charging ? " (charging ⚡)" : "";
+        addMsg("🔋 Battery: " + pct + "%" + charging, 'bot');
       }).catch(function(){
-        addMsg("Batareya ma'lumotini olib bo'lmadi.", 'bot');
+        addMsg("Unable to retrieve battery information.", 'bot');
       });
     } else {
-      addMsg("Bu qurilma batareya ma'lumotini qo'llab-quvvatlamaydi.", 'bot');
+      addMsg("This device does not support battery information..", 'bot');
     }
     return;
   }
 
-  addMsg("Noma'lum buyruq.", 'bot');
+  addMsg("Unknown command.", 'bot');
 }
 
 // ── Reply ──

@@ -34,7 +34,7 @@ user: phone vibrate
 action: VIBRATE
 
 
-user: telegramga kir
+user: telegramga kir, telegram och
 action: OPEN:tg://
 
 user: join telegram
@@ -48,7 +48,7 @@ user: open youtube
 action: OPEN:https://youtube.com
 
 
-user: instagramga kir
+user: instagramga kir, Instagram kir, instagram och, Instagram och
 action: OPEN:https://instagram.com
 
 user: go to instagram
