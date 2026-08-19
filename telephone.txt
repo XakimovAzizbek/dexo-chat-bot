@@ -85,3 +85,9 @@ action: BATTERY
 
 user: Google ilovasiga kir
 action: OPEN:https://google.com
+
+user: google xaritaga kir
+action: OPEN:https://maps.google.com
+
+user: gmailga kir
+action: OPEN:googlegmail://
