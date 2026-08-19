@@ -91,3 +91,6 @@ action: OPEN:https://maps.google.com
 
 user: gmailga kir
 action: OPEN:googlegmail://
+
+user: soat 5 ga budilnik qoy
+action: OPEN:intent:///#Intent;action=android.intent.action.SET_ALARM;i.HOUR=5;i.MINUTES=0;end
