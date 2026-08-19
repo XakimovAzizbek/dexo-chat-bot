@@ -81,3 +81,7 @@ action: BATTERY
 
 user: battery charge
 action: BATTERY
+
+
+user: Google ilovasiga kir
+action: OPEN:https://google.com
